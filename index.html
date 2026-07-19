@@ -2,14 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎰 جاك بوت - اللعبة العالمية</title>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🎰 جاك بوت - اللعبة النهائية</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js">
+    </script>
     <style>
         /* ============================================================
-           الأنماط الأساسية - تصميم نابض بالحياة مع تنعيم
-           ============================================================ */
-        
+               التصميم النهائي للعبة - مستوى AAA
+               تم تحسين كل شيء للأداء والجماليات
+               ============================================================ */
+
         * {
             margin: 0;
             padding: 0;
@@ -23,191 +25,70 @@
             --secondary: #ff00ff;
             --accent: #ffd700;
             --bg-dark: #0a0a1a;
-            --neon-blue: #00ccff;
-            --neon-pink: #ff0066;
-            --neon-green: #00ff88;
-            --card-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* --- إعادة تعيين وتحسينات الأداء --- */
+        html,
         body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             font-family: 'Orbitron', sans-serif;
-            background: var(--bg-dark);
-            min-height: 100vh;
-            overflow-x: hidden;
+            background: #0a0a1a;
             color: #fff;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
-        /* ============================================================
-           خلفية نابضة بالحياة
-           ============================================================ */
-        
-        .bg-animated {
+        /* --- خلفية اللعبة المتطورة (قابلة للتخصيص) --- */
+        #gameBackground {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
-            background: 
+            background:
                 radial-gradient(ellipse at 20% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 50%, rgba(255, 0, 255, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 100%, rgba(0, 100, 255, 0.05) 0%, transparent 50%),
                 #0a0a1a;
-            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.8s var(--transition-smooth);
         }
 
-        .bg-grid {
+        /* --- طبقة شبكية متحركة --- */
+        .bg-grid-overlay {
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: gridMove 25s linear infinite;
+            background-size: 80px 80px;
+            animation: gridMove 30s linear infinite;
+            pointer-events: none;
             will-change: transform;
         }
 
         @keyframes gridMove {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(60px, 60px) rotate(2deg); }
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(80px, 80px) rotate(2deg);
+            }
         }
 
-        .bg-circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .bg-circle {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 255, 255, 0.04);
-            animation: circleFloat 30s linear infinite;
-            will-change: transform;
-        }
-
-        .bg-circle:nth-child(1) {
-            width: 400px;
-            height: 400px;
-            top: -100px;
-            right: -100px;
-            animation-duration: 30s;
-        }
-        .bg-circle:nth-child(2) {
-            width: 600px;
-            height: 600px;
-            bottom: -200px;
-            left: -200px;
-            animation-duration: 40s;
-            animation-delay: -10s;
-            border-color: rgba(255, 0, 255, 0.04);
-        }
-        .bg-circle:nth-child(3) {
-            width: 300px;
-            height: 300px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-duration: 25s;
-            border-color: rgba(0, 255, 255, 0.02);
-        }
-
-        @keyframes circleFloat {
-            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-            25% { transform: translate(60px, -40px) rotate(90deg) scale(1.05); }
-            50% { transform: translate(-30px, 50px) rotate(180deg) scale(0.95); }
-            75% { transform: translate(40px, -30px) rotate(270deg) scale(1.02); }
-            100% { transform: translate(0, 0) rotate(360deg) scale(1); }
-        }
-
-        /* ============================================================
-           جزيئات ناعمة
-           ============================================================ */
-        
-        .particles-smooth {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .particle-smooth {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: particleFloat 20s ease-in-out infinite;
-            opacity: 0;
-            will-change: transform, opacity;
-        }
-
-        @keyframes particleFloat {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
-        }
-
-        /* ============================================================
-           شريط علوي متحرك
-           ============================================================ */
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            z-index: 999;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-            background-size: 300% 100%;
-            animation: barSlide 4s linear infinite;
-        }
-
-        @keyframes barSlide {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 300% 0%; }
-        }
-
-        /* ============================================================
-           الحاوية الرئيسية
-           ============================================================ */
-        
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px 15px 30px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* ============================================================
-           شاشة التحميل
-           ============================================================ */
-        
+        /* --- شاشة التحميل الاحترافية --- */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -220,7 +101,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease, visibility 1s ease;
+            transition: opacity 1s var(--transition-smooth), visibility 1s var(--transition-smooth);
         }
 
         #loadingScreen.hidden {
@@ -229,74 +110,63 @@
             pointer-events: none;
         }
 
-        .loading-wrapper {
-            position: relative;
-            animation: loadingPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes loadingPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .loading-wrapper::before {
-            content: '';
+        #loadingScreen .loading-bg {
             position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent, var(--primary), transparent, var(--secondary), transparent);
-            animation: loadingSpin 4s linear infinite;
-        }
-
-        @keyframes loadingSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #loadingImage {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border: 3px solid rgba(0, 255, 255, 0.3);
-            position: relative;
-            z-index: 1;
-            animation: imagePulse 1.5s ease-in-out infinite alternate;
-            will-change: transform;
+            opacity: 0.4;
+            filter: blur(2px);
         }
 
-        @keyframes imagePulse {
-            0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 50px rgba(0, 255, 255, 0.1); }
-            100% { transform: scale(1.03) rotate(3deg); box-shadow: 0 0 80px rgba(255, 0, 255, 0.2); }
+        .loading-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
         }
 
         .loading-title {
-            font-size: 2.5rem;
+            font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
-            margin-top: 25px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: titleGlow 3s ease-in-out infinite alternate;
+            animation: loadingTitleGlow 2s ease-in-out infinite alternate;
+            margin-bottom: 20px;
+            text-shadow: 0 0 80px rgba(0, 255, 255, 0.2);
+            letter-spacing: 6px;
         }
 
-        @keyframes titleGlow {
-            0% { background-position: 0% 50%; filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.2)); }
-            100% { background-position: 100% 50%; filter: drop-shadow(0 0 50px rgba(255, 0, 255, 0.3)); }
+        @keyframes loadingTitleGlow {
+            0% {
+                background-position: 0% 50%;
+                filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.2));
+            }
+            100% {
+                background-position: 100% 50%;
+                filter: drop-shadow(0 0 60px rgba(255, 0, 255, 0.3));
+            }
         }
 
         .loading-bar-container {
-            width: min(320px, 80vw);
-            height: 6px;
+            width: min(600px, 85vw);
+            height: 8px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            margin-top: 30px;
+            border-radius: 4px;
+            position: relative;
             overflow: hidden;
             border: 1px solid rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.05);
         }
 
         .loading-bar {
@@ -304,104 +174,172 @@
             width: 0%;
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
             background-size: 300% 100%;
-            border-radius: 3px;
-            animation: barGlow 2s ease-in-out infinite alternate;
-            transition: width 0.6s var(--transition-smooth);
-            will-change: width;
+            border-radius: 4px;
+            transition: width 0.8s var(--transition-smooth);
+            position: relative;
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: 0;
+            width: 30px;
+            height: calc(100% + 4px);
+            background: rgba(255, 255, 255, 0.4);
+            filter: blur(8px);
+            animation: barGlow 1s ease-in-out infinite alternate;
         }
 
         @keyframes barGlow {
-            0% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(0, 255, 255, 0.2); }
-            100% { background-position: 100% 50%; box-shadow: 0 0 40px rgba(255, 0, 255, 0.2); }
+            0% {
+                opacity: 0.3;
+                transform: translateX(-30px);
+            }
+            100% {
+                opacity: 0.9;
+                transform: translateX(30px);
+            }
+        }
+
+        .loading-percent {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 20px;
+            letter-spacing: 6px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            font-variant-numeric: tabular-nums;
         }
 
         .loading-text {
-            margin-top: 15px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 4px;
+            letter-spacing: 8px;
             text-transform: uppercase;
-            animation: textPulse 2s ease-in-out infinite;
+            margin-top: 10px;
+            animation: loadingTextPulse 2s ease-in-out infinite;
         }
 
-        @keyframes textPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+        @keyframes loadingTextPulse {
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 1;
+            }
         }
 
-        /* ============================================================
-           الهيدر
-           ============================================================ */
-        
+        .loading-dots {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .loading-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            animation: dotBounce 1.5s ease-in-out infinite;
+            will-change: transform, background, box-shadow;
+        }
+
+        .loading-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes dotBounce {
+            0%,
+            80%,
+            100% {
+                transform: scale(0.6);
+                opacity: 0.3;
+                background: rgba(255, 255, 255, 0.03);
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+                background: var(--primary);
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        /* --- الهيدر المتطور --- */
         .header {
-            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s var(--transition-smooth);
+            min-height: 60px;
         }
 
         .header-title {
-            font-size: 1.4rem;
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
             font-weight: 900;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
-            background-size: 200% 200%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: headerTitlePulse 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes headerTitlePulse {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+            letter-spacing: 2px;
         }
 
         .header-info {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .header-stat {
             text-align: center;
             padding: 4px 12px;
             background: rgba(0, 255, 255, 0.03);
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.03);
             transition: all 0.3s ease;
         }
 
         .header-stat .value {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--primary);
-            transition: all 0.3s ease;
+            font-variant-numeric: tabular-nums;
         }
 
         .header-stat .label {
-            font-size: 0.5rem;
-            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.45rem;
+            color: rgba(255, 255, 255, 0.25);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .user-badge {
-            padding: 6px 16px;
-            border-radius: 25px;
-            font-size: 0.7rem;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.6rem;
             background: rgba(0, 255, 255, 0.06);
             border: 1px solid rgba(0, 255, 255, 0.1);
             color: var(--primary);
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .user-badge.admin {
@@ -410,411 +348,234 @@
             color: var(--secondary);
         }
 
-        /* ============================================================
-           لوحة الإدارة
-           ============================================================ */
-        
-        #adminPanel {
-            width: 100%;
-            display: none;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(12px);
-            animation: panelIn 0.5s ease;
-        }
-
-        @keyframes panelIn {
-            from { opacity: 0; transform: translateY(-20px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        #adminPanel.show { display: block; }
-
-        .admin-tabs {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 12px;
-        }
-
-        .admin-tab {
-            padding: 6px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 25px;
-            background: transparent;
-            color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
+        .admin-toggle {
+            padding: 5px 14px;
+            border: 1px solid rgba(255, 0, 255, 0.2);
+            border-radius: 20px;
+            background: rgba(255, 0, 255, 0.05);
+            color: var(--secondary);
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-        }
-
-        .admin-tab:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
-
-        .admin-tab.active {
-            background: rgba(0, 255, 255, 0.08);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .admin-tab-content {
-            display: none;
-            animation: tabFadeIn 0.4s ease;
-        }
-
-        @keyframes tabFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .admin-tab-content.active { display: block; }
-
-        .admin-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .admin-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px 12px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            animation: cardFloat 3s ease-in-out infinite alternate;
-        }
-
-        .admin-card:nth-child(1) { animation-delay: 0s; }
-        .admin-card:nth-child(2) { animation-delay: 0.3s; }
-        .admin-card:nth-child(3) { animation-delay: 0.6s; }
-        .admin-card:nth-child(4) { animation-delay: 0.9s; }
-        .admin-card:nth-child(5) { animation-delay: 1.2s; }
-
-        @keyframes cardFloat {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-4px); }
-        }
-
-        .admin-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-4px);
-            border-color: rgba(0, 255, 255, 0.1);
-        }
-
-        .admin-card .number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .admin-card .label {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-top: 4px;
-            letter-spacing: 1px;
-        }
-
-        .admin-table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.7rem;
-            min-width: 400px;
-        }
-
-        .admin-table th {
-            text-align: right;
-            padding: 8px 12px;
-            color: rgba(255, 255, 255, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.55rem;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
             text-transform: uppercase;
-            font-size: 0.5rem;
-            letter-spacing: 2px;
-            background: rgba(0, 255, 255, 0.02);
-        }
-
-        .admin-table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .admin-table tr {
-            transition: all 0.3s ease;
-        }
-
-        .admin-table tr:hover td {
-            background: rgba(0, 255, 255, 0.03);
-        }
-
-        /* ============================================================
-           الإعدادات
-           ============================================================ */
-        
-        .settings-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .settings-item {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .settings-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(0, 255, 255, 0.08);
-        }
-
-        .settings-item label {
-            display: block;
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 6px;
             letter-spacing: 1px;
+            white-space: nowrap;
         }
 
-        .settings-item input[type="text"],
-        .settings-item input[type="number"],
-        .settings-item input[type="url"] {
+        .admin-toggle:hover {
+            background: rgba(255, 0, 255, 0.12);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* --- مؤقت الإنتظار (Cooldown) --- */
+        .cooldown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            transition: all 0.3s ease;
-        }
-
-        .settings-item input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
-        }
-
-        .settings-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .settings-item .checkbox-group {
-            display: flex;
+            height: 100%;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            flex-direction: column;
         }
 
-        .settings-item .checkbox-group label {
-            margin-bottom: 0;
-            cursor: pointer;
+        .cooldown-overlay.show {
+            display: flex;
+            animation: cooldownIn 0.6s var(--transition-smooth);
         }
 
-        /* ============================================================
-           الأزرار
-           ============================================================ */
-        
-        .btn-action {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 25px;
-            font-family: 'Orbitron', sans-serif;
+        @keyframes cooldownIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .cooldown-content {
+            text-align: center;
+            padding: 45px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            max-width: 90%;
+            width: 450px;
+        }
+
+        .cooldown-content .icon {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .cooldown-content .title {
+            font-size: 1.6rem;
             font-weight: 700;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
         }
 
-        .btn-action:hover {
-            transform: scale(1.05) translateY(-2px);
+        .cooldown-content .subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 20px;
         }
 
-        .btn-action:active {
-            transform: scale(0.95);
+        .cooldown-content .timer {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 60px rgba(0, 255, 255, 0.2);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
         }
 
-        .btn-primary {
-            background: linear-gradient(45deg, var(--primary), #0088ff);
-            color: #0a0a1a;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(45deg, var(--neon-green), #00cc66);
-            color: #0a0a1a;
-        }
-
-        .btn-success:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, var(--neon-pink), #cc0033);
-            color: #fff;
-        }
-
-        .btn-danger:hover {
-            box-shadow: 0 0 30px rgba(255, 0, 102, 0.3);
-        }
-
-        .btn-gradient {
-            background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent));
-            background-size: 200% 200%;
-            color: #0a0a1a;
-            animation: btnGradient 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes btnGradient {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-
-        .btn-gradient:hover {
-            box-shadow: 0 0 40px rgba(255, 0, 255, 0.3);
-        }
-
-        /* ============================================================
-           منطقة اللعبة
-           ============================================================ */
-        
+        /* --- منطقة اللعبة الرئيسية --- */
         #gameArea {
-            width: 100%;
-            max-width: 750px;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
             display: none;
-            animation: gameAreaIn 0.8s var(--transition-smooth);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        #gameArea.show {
+            display: flex;
+            animation: gameAreaIn 0.7s var(--transition-smooth);
         }
 
         @keyframes gameAreaIn {
-            from { opacity: 0; transform: scale(0.9) rotateY(-10deg); }
-            to { opacity: 1; transform: scale(1) rotateY(0deg); }
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
-
-        #gameArea.show { display: block; }
 
         .game-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            width: 100%;
         }
 
         .game-header .prize-display {
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 1.2vw, 1.1rem);
             color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         .game-header .prize-display .highlight {
             color: var(--accent);
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: clamp(1.2rem, 2.2vw, 1.8rem);
             animation: highlightPulse 1.5s ease-in-out infinite alternate;
         }
 
         @keyframes highlightPulse {
-            0% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
-            100% { transform: scale(1.05); text-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            }
         }
 
         .attempts-display {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-top: 12px;
-            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 14px;
         }
 
         .attempt-dot {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.03);
             border: 2px solid rgba(255, 255, 255, 0.05);
             transition: all 0.4s var(--transition-smooth);
-            will-change: transform;
+            will-change: transform, background, border-color, box-shadow;
         }
 
         .attempt-dot.used {
-            background: rgba(255, 68, 102, 0.3);
+            background: rgba(255, 68, 102, 0.25);
             border-color: #ff4466;
-            box-shadow: 0 0 20px rgba(255, 68, 102, 0.1);
+            box-shadow: 0 0 25px rgba(255, 68, 102, 0.1);
             transform: scale(0.8);
         }
 
         .attempt-dot.active {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(0, 255, 255, 0.15);
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
             animation: dotActive 1s ease-in-out infinite alternate;
         }
 
         @keyframes dotActive {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.3); }
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.3);
+            }
         }
 
-        /* ============================================================
-           بطاقات اللعبة - مع نيران زرقاء
-           ============================================================ */
-        
+        /* --- شبكة البطاقات - تصميم احترافي 3D --- */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            perspective: 2000px;
+            gap: clamp(12px, 1.8vw, 22px);
+            perspective: 2500px;
+            max-width: 780px;
+            width: 100%;
             padding: 8px;
         }
 
         .card-container {
             aspect-ratio: 3/4;
             cursor: pointer;
-            perspective: 1000px;
+            perspective: 1200px;
             position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.3s var(--transition-smooth);
             will-change: transform;
         }
 
         .card-container:hover:not(.disabled) .card:not(.flipped) {
-            transform: rotateY(15deg) rotateX(8deg) scale(1.03);
-            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.1);
+            transform: rotateY(18deg) rotateX(10deg) scale(1.04);
+            filter: brightness(1.15);
         }
 
         .card {
@@ -823,7 +584,7 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.7s var(--transition-smooth);
-            border-radius: 14px;
+            border-radius: clamp(12px, 1.8vw, 18px);
             will-change: transform;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
@@ -834,14 +595,25 @@
         }
 
         .card.matched {
-            animation: matchExplosion 0.7s var(--transition-smooth);
+            animation: matchExplosion 0.8s var(--transition-smooth);
         }
 
         @keyframes matchExplosion {
-            0% { transform: rotateY(180deg) scale(1); }
-            30% { transform: rotateY(180deg) scale(1.2) rotate(8deg); }
-            60% { transform: rotateY(180deg) scale(1.05) rotate(-4deg); }
-            100% { transform: rotateY(180deg) scale(1); }
+            0% {
+                transform: rotateY(180deg) scale(1);
+            }
+            25% {
+                transform: rotateY(180deg) scale(1.25) rotate(8deg);
+            }
+            50% {
+                transform: rotateY(180deg) scale(0.92) rotate(-5deg);
+            }
+            75% {
+                transform: rotateY(180deg) scale(1.08) rotate(3deg);
+            }
+            100% {
+                transform: rotateY(180deg) scale(1);
+            }
         }
 
         .card-face {
@@ -849,21 +621,30 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 14px;
+            border-radius: clamp(12px, 1.8vw, 18px);
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-            box-shadow: var(--card-shadow);
             overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: 2px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* الوجه الخلفي - نيران زرقاء */
+        /* --- الوجه الخلفي (ظهر البطاقة) مع نيران زرقاء --- */
         .card-back {
-            background: linear-gradient(145deg, #0a1a2a, #040a12);
+            background: linear-gradient(145deg, #0a1a2a, #02080e);
             transform: rotateY(0deg);
-            border-color: rgba(0, 255, 255, 0.1);
+            border-color: rgba(0, 255, 255, 0.08);
             position: relative;
+            padding: 4px;
+        }
+
+        .card-back .card-back-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: clamp(10px, 1.5vw, 16px);
+            display: block;
         }
 
         .card-back::before {
@@ -873,15 +654,19 @@
             left: -3px;
             right: -3px;
             bottom: -3px;
-            border-radius: 17px;
-            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.4), transparent, rgba(100, 0, 255, 0.4), transparent);
-            animation: flameSpin 3s linear infinite;
+            border-radius: clamp(15px, 2.2vw, 21px);
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.5), transparent, rgba(168, 85, 247, 0.5), transparent);
+            animation: flameSpin 4s linear infinite;
             z-index: -1;
         }
 
         @keyframes flameSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .card-back .fire-effect {
@@ -890,111 +675,165 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(ellipse at 30% 40%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 60%, rgba(100, 0, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(0, 200, 255, 0.05) 0%, transparent 40%);
-            border-radius: 14px;
-            animation: fireDance 2.5s ease-in-out infinite alternate;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(0, 255, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(0, 200, 255, 0.04) 0%, transparent 40%);
+            border-radius: clamp(12px, 1.8vw, 18px);
+            animation: fireDance 3s ease-in-out infinite alternate;
+            pointer-events: none;
         }
 
         @keyframes fireDance {
-            0% { opacity: 0.3; transform: scale(1) rotate(-2deg) skewX(0deg); }
-            50% { opacity: 0.8; transform: scale(1.04) rotate(2deg) skewX(2deg); }
-            100% { opacity: 0.5; transform: scale(1.01) rotate(-1deg) skewX(-2deg); }
+            0% {
+                opacity: 0.2;
+                transform: scale(1) rotate(-2deg);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05) rotate(2deg);
+            }
+            100% {
+                opacity: 0.4;
+                transform: scale(1.02) rotate(-1deg);
+            }
         }
 
-        .card-back .card-icon {
-            font-size: 2rem;
+        .card-back .card-icon-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(2.2rem, 4.5vw, 4rem);
             z-index: 2;
-            text-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
-            animation: cardIconFloat 3s ease-in-out infinite;
+            text-shadow: 0 0 60px rgba(0, 255, 255, 0.15);
+            animation: iconFloat 3s ease-in-out infinite;
+            pointer-events: none;
         }
 
-        @keyframes cardIconFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(3deg); }
+        @keyframes iconFloat {
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -55%) scale(1.06);
+            }
         }
 
-        /* الوجه الأمامي */
+        /* --- الوجه الأمامي (رمز البطاقة) --- */
         .card-front {
             transform: rotateY(180deg);
             background: linear-gradient(145deg, rgba(10, 30, 50, 0.95), rgba(5, 15, 30, 0.95));
-            border-color: rgba(255, 255, 255, 0.05);
-            padding: 10px;
+            border-color: rgba(255, 255, 255, 0.03);
+            padding: 12%;
         }
 
-        .card-front img {
+        .card-front .card-symbol-image {
             width: 80%;
             height: 80%;
             object-fit: contain;
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
-            animation: symbolPulse 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.05));
+            animation: symbolPulse 2.5s ease-in-out infinite alternate;
+            will-change: transform;
         }
 
         @keyframes symbolPulse {
-            0% { transform: scale(1) rotate(0deg); }
-            100% { transform: scale(1.05) rotate(3deg); }
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                transform: scale(1.06) rotate(4deg);
+            }
         }
 
         .card-front .symbol-text {
-            font-size: 3rem;
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
             font-weight: 900;
-            text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
         }
 
         .card-container.disabled {
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.4;
+            filter: grayscale(0.4);
         }
 
         .card-container.disabled .card {
-            filter: grayscale(0.3);
+            transform: scale(0.95);
         }
 
-        /* ============================================================
-           نافذة النتيجة
-           ============================================================ */
-        
+        /* --- تأثيرات الفوز الاحترافية --- */
+        .win-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            pointer-events: none;
+            display: none;
+            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.05), transparent 70%);
+        }
+
+        .win-overlay.show {
+            display: block;
+            animation: winFlash 0.5s ease;
+        }
+
+        @keyframes winFlash {
+            0%,
+            100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* --- نافذة النتيجة المتطورة --- */
         #resultModal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 500;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(20px);
+            z-index: 300;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             display: none;
             justify-content: center;
             align-items: center;
-            animation: modalIn 0.5s var(--transition-smooth);
+        }
+
+        #resultModal.show {
+            display: flex;
+            animation: modalIn 0.6s var(--transition-smooth);
         }
 
         @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.8) rotateY(15deg); }
-            to { opacity: 1; transform: scale(1) rotateY(0deg); }
+            from {
+                opacity: 0;
+                transform: scale(0.85) rotateY(15deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
         }
-
-        #resultModal.show { display: flex; }
 
         .modal-content {
             background: linear-gradient(145deg, rgba(10, 20, 45, 0.95), rgba(5, 10, 20, 0.95));
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 22px;
-            padding: 35px 40px;
+            border-radius: 30px;
+            padding: clamp(30px, 5vw, 55px);
             text-align: center;
-            max-width: 450px;
+            max-width: 520px;
             width: 90%;
-            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
             position: relative;
             overflow: hidden;
-            animation: modalContentPulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes modalContentPulse {
-            0% { border-color: rgba(0, 255, 255, 0.05); }
-            100% { border-color: rgba(255, 0, 255, 0.05); }
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
         }
 
         .modal-content::before {
@@ -1005,36 +844,46 @@
             width: 200%;
             height: 200%;
             background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.04), transparent, rgba(255, 0, 255, 0.04), transparent);
-            animation: modalSpin 10s linear infinite;
+            animation: modalSpin 12s linear infinite;
             z-index: 0;
         }
 
         @keyframes modalSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        .modal-content > * {
+        .modal-content>* {
             position: relative;
             z-index: 1;
         }
 
         .modal-title {
-            font-size: 2.4rem;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
             font-weight: 900;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .modal-title.win {
-            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: winTitlePulse 1s ease-in-out infinite alternate;
         }
 
         @keyframes winTitlePulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.2)); }
-            100% { transform: scale(1.04); filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4)); }
+            0% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.2));
+            }
+            100% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.5));
+            }
         }
 
         .modal-title.lose {
@@ -1043,120 +892,243 @@
         }
 
         @keyframes loseTitlePulse {
-            0% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 68, 102, 0.2); }
-            100% { transform: scale(0.96); text-shadow: 0 0 40px rgba(255, 68, 102, 0.1); }
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 30px rgba(255, 68, 102, 0.2);
+            }
+            100% {
+                transform: scale(0.96);
+                text-shadow: 0 0 60px rgba(255, 68, 102, 0.1);
+            }
         }
 
         .modal-prize {
-            font-size: 4.5rem;
-            margin: 12px 0;
-            animation: prizeFloat 2s ease-in-out infinite alternate;
+            font-size: clamp(4rem, 8vw, 6rem);
+            margin: 15px 0;
+            animation: prizeFloat 2.5s ease-in-out infinite alternate;
         }
 
         @keyframes prizeFloat {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-8px) scale(1.04); }
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                transform: translateY(-12px) scale(1.06);
+            }
         }
 
         .modal-prize-value {
-            font-size: 1.8rem;
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
             font-weight: 700;
             color: var(--accent);
             animation: valuePulse 1.5s ease-in-out infinite alternate;
         }
 
         @keyframes valuePulse {
-            0% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
-            100% { transform: scale(1.04); text-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+            }
         }
 
         .modal-detail {
             margin: 12px 0;
             color: rgba(255, 255, 255, 0.3);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             letter-spacing: 1px;
         }
 
-        /* ============================================================
-           رسائل النظام
-           ============================================================ */
-        
-        .error-message {
-            background: rgba(255, 68, 102, 0.05);
-            border: 1px solid rgba(255, 68, 102, 0.1);
-            border-radius: 12px;
-            padding: 10px 16px;
-            color: #ff4466;
-            margin-bottom: 16px;
-            display: none;
-            width: 100%;
-            backdrop-filter: blur(5px);
-            font-size: 0.75rem;
-            animation: errorPulse 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes errorPulse {
-            0% { border-color: rgba(255, 68, 102, 0.1); }
-            100% { border-color: rgba(255, 68, 102, 0.2); }
-        }
-
-        .error-message.show {
-            display: block;
-            animation: errorSlideIn 0.4s var(--transition-smooth);
-        }
-
-        @keyframes errorSlideIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .error-message.info {
-            border-color: rgba(0, 255, 255, 0.15);
-            color: var(--primary);
-        }
-
-        /* ============================================================
-           زر البدء
-           ============================================================ */
-        
-        .btn-start {
+        .modal-btn {
             padding: 14px 40px;
             border: none;
-            border-radius: 50px;
+            border-radius: 60px;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 1.2vw, 1rem);
             cursor: pointer;
             background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent));
             background-size: 300% 300%;
             color: #0a0a1a;
-            transition: all 0.3s ease;
-            letter-spacing: 2px;
+            transition: all 0.3s var(--transition-smooth);
+            letter-spacing: 3px;
             text-transform: uppercase;
-            box-shadow: 0 8px 30px rgba(0, 255, 255, 0.1);
             margin-top: 20px;
+            animation: btnGradient 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes btnGradient {
+            0% {
+                background-position: 0% 50%;
+                box-shadow: 0 10px 40px rgba(0, 255, 255, 0.1);
+            }
+            100% {
+                background-position: 100% 50%;
+                box-shadow: 0 10px 60px rgba(255, 0, 255, 0.2);
+            }
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.2);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- زر البدء المتطور --- */
+        .btn-start {
+            position: fixed;
+            bottom: clamp(25px, 4vh, 50px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            padding: 18px 55px;
+            border: none;
+            border-radius: 70px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            cursor: pointer;
+            background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent));
+            background-size: 300% 300%;
+            color: #0a0a1a;
+            transition: all 0.3s var(--transition-smooth);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 50px rgba(0, 255, 255, 0.15);
             display: none;
             animation: btnStartPulse 2s ease-in-out infinite alternate;
+            white-space: nowrap;
         }
 
         @keyframes btnStartPulse {
-            0% { background-position: 0% 50%; box-shadow: 0 8px 30px rgba(0, 255, 255, 0.1); }
-            100% { background-position: 100% 50%; box-shadow: 0 8px 40px rgba(255, 0, 255, 0.2); }
+            0% {
+                background-position: 0% 50%;
+                box-shadow: 0 10px 50px rgba(0, 255, 255, 0.1);
+            }
+            100% {
+                background-position: 100% 50%;
+                box-shadow: 0 15px 70px rgba(255, 0, 255, 0.2);
+            }
         }
 
         .btn-start:hover {
-            transform: scale(1.04) translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 255, 255, 0.2);
+            transform: translateX(-50%) scale(1.06) translateY(-4px);
+            box-shadow: 0 20px 70px rgba(0, 255, 255, 0.25);
         }
 
         .btn-start:active {
-            transform: scale(0.96);
+            transform: translateX(-50%) scale(0.95);
         }
 
-        /* ============================================================
-           مؤثرات النثار
-           ============================================================ */
-        
+        /* --- لوحة الإدارة المنبثقة (للمشرف فقط) --- */
+        #adminPanel {
+            position: fixed;
+            top: 65px;
+            right: -420px;
+            width: 400px;
+            max-width: 90vw;
+            height: calc(100vh - 65px);
+            z-index: 150;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 25px 20px;
+            overflow-y: auto;
+            transition: right 0.5s var(--transition-smooth);
+        }
+
+        #adminPanel.open {
+            right: 0;
+        }
+
+        #adminPanel::-webkit-scrollbar {
+            width: 4px;
+        }
+        #adminPanel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #adminPanel::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .admin-panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .admin-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            padding: 5px 10px;
+        }
+
+        .admin-close:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        /* --- رسائل التنبيه --- */
+        .error-toast {
+            position: fixed;
+            bottom: clamp(90px, 12vh, 130px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            padding: 14px 28px;
+            background: rgba(255, 68, 102, 0.08);
+            border: 1px solid rgba(255, 68, 102, 0.15);
+            border-radius: 14px;
+            color: #ff4466;
+            font-size: 0.85rem;
+            display: none;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            text-align: center;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-toast.show {
+            display: block;
+            animation: toastIn 0.5s var(--transition-smooth);
+        }
+
+        .error-toast.info {
+            border-color: rgba(0, 255, 255, 0.15);
+            color: var(--primary);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(25px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+
+        /* --- مؤثرات النثار الاحترافية --- */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -1164,14 +1136,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 600;
+            z-index: 250;
             overflow: hidden;
         }
 
-        .confetti {
+        .confetti-piece {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             top: -15px;
             animation: confettiFall linear forwards;
             will-change: transform, opacity;
@@ -1182,185 +1154,273 @@
                 transform: translateY(0) rotate(0deg) scale(0) skewX(0deg);
                 opacity: 0;
             }
-            15% {
+            10% {
                 opacity: 1;
-                transform: translateY(15vh) rotate(180deg) scale(1.1) skewX(8deg);
+                transform: translateY(10vh) rotate(180deg) scale(1.2) skewX(12deg);
             }
-            85% { opacity: 1; }
+            90% {
+                opacity: 1;
+            }
             100% {
-                transform: translateY(115vh) rotate(720deg) scale(0.5) skewX(-8deg);
+                transform: translateY(110vh) rotate(720deg) scale(0.4) skewX(-12deg);
                 opacity: 0;
             }
         }
 
-        /* ============================================================
-           مؤقت الإنتظار (Cooldown)
-           ============================================================ */
-        
-        .cooldown-display {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
+        /* --- زر ملء الشاشة --- */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: clamp(80px, 10vh, 110px);
+            right: 20px;
+            z-index: 15;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            margin: 10px 0;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
             display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
-        .cooldown-display.show { display: block; }
-
-        .cooldown-display .timer {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--accent);
-            animation: timerPulse 1s ease-in-out infinite alternate;
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transform: scale(1.05);
         }
 
-        @keyframes timerPulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+        @media (display-mode: fullscreen) {
+            .fullscreen-btn {
+                display: flex;
+            }
         }
 
-        .cooldown-display .label {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 2px;
-        }
-
-        /* ============================================================
-           تصميم متجاوب
-           ============================================================ */
-        
+        /* --- تحسينات للشاشات الصغيرة والمتوسطة --- */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px 15px;
+            #adminPanel {
+                width: 100%;
+                right: -100%;
+                top: 60px;
+                height: calc(100vh - 60px);
+                padding: 20px 15px;
             }
 
-            .header-info { gap: 10px; justify-content: center; }
-
             .cards-grid {
-                gap: 8px;
+                gap: 10px;
                 padding: 4px;
             }
 
-            .card-front img { width: 70%; height: 70%; }
-            .card-front .symbol-text { font-size: 2.2rem; }
-            .card-back .card-icon { font-size: 1.5rem; }
+            .header {
+                padding: 8px 15px;
+                min-height: 55px;
+            }
 
-            .admin-tabs { justify-content: center; }
-            .admin-tab { font-size: 0.5rem; padding: 5px 10px; }
-
-            .settings-group { grid-template-columns: 1fr; }
-
-            .admin-table { font-size: 0.6rem; min-width: 320px; }
-            .admin-table th, .admin-table td { padding: 6px 8px; }
-
-            .modal-content { padding: 25px 20px; }
-            .modal-title { font-size: 1.8rem; }
-            .modal-prize { font-size: 3.5rem; }
-            .modal-prize-value { font-size: 1.4rem; }
-
-            .loading-title { font-size: 1.8rem; }
-            #loadingImage { width: 120px; height: 120px; }
+            .header-title {
+                font-size: 1rem;
+            }
 
             .btn-start {
-                padding: 12px 30px;
+                padding: 15px 30px;
                 font-size: 0.85rem;
+                bottom: 20px;
             }
 
-            .admin-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+            .cooldown-content {
+                padding: 30px 20px;
             }
 
-            .admin-card .number { font-size: 1.4rem; }
+            .cooldown-content .timer {
+                font-size: 3rem;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+            }
+
+            .fullscreen-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+                bottom: 75px;
+                right: 15px;
+            }
+
+            .error-toast {
+                font-size: 0.75rem;
+                padding: 10px 18px;
+                bottom: 75px;
+            }
         }
 
         @media (max-width: 480px) {
             .cards-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 6px;
+                gap: 8px;
             }
 
-            .card-front img { width: 60%; height: 60%; }
-            .card-front .symbol-text { font-size: 1.8rem; }
-            .card-back .card-icon { font-size: 1.2rem; }
+            .card-front .symbol-text {
+                font-size: 2.2rem;
+            }
 
-            .header-title { font-size: 1.1rem; }
-            .header-stat .value { font-size: 0.9rem; }
+            .header-stat .value {
+                font-size: 0.75rem;
+            }
+            .header-stat .label {
+                font-size: 0.4rem;
+            }
 
-            .admin-grid { grid-template-columns: repeat(2, 1fr); }
-            .admin-card { padding: 10px 8px; }
-            .admin-card .number { font-size: 1.2rem; }
+            .btn-start {
+                padding: 12px 25px;
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+                bottom: 15px;
+            }
 
-            .modal-content { padding: 20px 15px; }
-            .modal-title { font-size: 1.5rem; }
-            .modal-prize { font-size: 2.8rem; }
-            .modal-prize-value { font-size: 1.2rem; }
+            .cooldown-content .timer {
+                font-size: 2.5rem;
+            }
 
-            .cooldown-display .timer { font-size: 1.5rem; }
+            .cooldown-content .title {
+                font-size: 1.2rem;
+            }
+
+            .loading-title {
+                font-size: 2rem;
+            }
+
+            .loading-bar-container {
+                width: 90vw;
+            }
+
+            .modal-title {
+                font-size: 1.8rem;
+            }
+            .modal-prize {
+                font-size: 3.5rem;
+            }
+            .modal-prize-value {
+                font-size: 1.5rem;
+            }
+
+            .user-badge {
+                font-size: 0.5rem;
+                padding: 3px 10px;
+            }
+            .admin-toggle {
+                font-size: 0.45rem;
+                padding: 3px 10px;
+            }
         }
 
         @media (max-width: 360px) {
             .cards-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 4px;
+                gap: 5px;
             }
 
-            .card-front img { width: 50%; height: 50%; }
-            .card-front .symbol-text { font-size: 1.4rem; }
+            .card-front .symbol-text {
+                font-size: 1.6rem;
+            }
 
-            .card-face { border-width: 1px; }
-            .card-back .card-icon { font-size: 1rem; }
+            .card-face {
+                border-width: 1px;
+            }
+
+            .header-title {
+                font-size: 0.8rem;
+            }
+
+            .header-stat {
+                padding: 2px 6px;
+            }
+            .header-stat .value {
+                font-size: 0.6rem;
+            }
         }
 
-        /* ============================================================
-           شريط التمرير المخصص
-           ============================================================ */
-        
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+        /* --- تحسينات للشاشات الكبيرة --- */
+        @media (min-width: 1200px) {
+            .cards-grid {
+                gap: 22px;
+                max-width: 850px;
+            }
+
+            .card-front .symbol-text {
+                font-size: 5rem;
+            }
+        }
+
+        /* --- فئة مساعدة لإخفاء العناصر للمستخدم العادي --- */
+        .admin-only {
+            display: none !important;
+        }
+
+        .admin-only.show {
+            display: flex !important;
+        }
+
+        /* --- تحسينات إضافية للأداء --- */
+        .card,
+        .card-face,
+        .card-back-image,
+        .card-symbol-image,
+        .loading-bar,
+        .confetti-piece,
+        .particle-smooth {
+            will-change: transform, opacity;
+        }
+
+        /* --- منع التحديد والنسخ --- */
+        .card-container,
+        .btn-start,
+        .modal-btn,
+        .admin-toggle {
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
 <body>
-    <!-- الشريط العلوي المتحرك -->
-    <div class="top-bar"></div>
 
-    <!-- الخلفية -->
-    <div class="bg-animated">
-        <div class="bg-grid"></div>
-        <div class="bg-circles">
-            <div class="bg-circle"></div>
-            <div class="bg-circle"></div>
-            <div class="bg-circle"></div>
-        </div>
+    <!-- ============================================================
+    خلفية اللعبة (قابلة للتخصيص من المدير)
+    ============================================================ -->
+    <div id="gameBackground">
+        <div class="bg-grid-overlay"></div>
     </div>
-    
-    <!-- جزيئات ناعمة -->
-    <div class="particles-smooth" id="particlesSmooth"></div>
 
-    <!-- شاشة التحميل -->
+    <!-- ============================================================
+    شاشة التحميل الاحترافية
+    ============================================================ -->
     <div id="loadingScreen">
-        <div class="loading-wrapper">
-            <img id="loadingImage" class="loading-image" src="https://i.imgur.com/4t8nYJr.png" alt="Loading">
+        <img id="loadingBgImage" class="loading-bg" src="https://i.imgur.com/placeholder.jpg" alt="Loading Background">
+        <div class="loading-content">
+            <div class="loading-title">🎰 جاك بوت</div>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <div class="loading-percent" id="loadingPercent">0%</div>
+            <div class="loading-text" id="loadingText">جاري تحميل العالم</div>
+            <div class="loading-dots">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>
         </div>
-        <div class="loading-title">🎰 جاك بوت</div>
-        <div class="loading-bar-container">
-            <div class="loading-bar" id="loadingBar"></div>
-        </div>
-        <div class="loading-text" id="loadingText">جاري تحميل عالم النشاط...</div>
     </div>
 
-    <!-- الحاوية الرئيسية -->
-    <div class="container">
-        <!-- الهيدر -->
-        <div class="header">
-            <div class="header-title" id="gameTitle">🎰 جاك بوت</div>
-            <div class="header-info">
+    <!-- ============================================================
+    الهيدر العلوي
+    ============================================================ -->
+    <header class="header">
+        <div class="header-title" id="gameTitle">🎰 جاك بوت</div>
+        <div class="header-info">
+            <!-- إحصائيات تظهر للمشرف فقط -->
+            <div id="adminStatsHeader" class="admin-only">
                 <div class="header-stat">
                     <div class="value" id="userBalance">0</div>
                     <div class="label">رصيد</div>
@@ -1373,187 +1433,99 @@
                     <div class="value" id="userWins">0</div>
                     <div class="label">فوز</div>
                 </div>
-                <div id="userBadge" class="user-badge">👤 مستخدم</div>
             </div>
+            <div id="userBadge" class="user-badge">👤 مستخدم</div>
+            <button class="admin-toggle" id="adminToggle" style="display:none;">⚙️ إدارة</button>
         </div>
+    </header>
 
-        <!-- مؤقت الإنتظار -->
-        <div class="cooldown-display" id="cooldownDisplay">
-            <div class="label">⏳ يمكنك اللعب بعد</div>
+    <!-- ============================================================
+    مؤقت الإنتظار (Cooldown)
+    ============================================================ -->
+    <div class="cooldown-overlay" id="cooldownOverlay">
+        <div class="cooldown-content">
+            <div class="icon">⏳</div>
+            <div class="title">إنتظار قليلاً</div>
+            <div class="subtitle">يمكنك اللعب مرة أخرى بعد</div>
             <div class="timer" id="cooldownTimer">00:00:00</div>
         </div>
-
-        <!-- رسالة الخطأ -->
-        <div class="error-message" id="errorMessage"></div>
-
-        <!-- لوحة الإدارة -->
-        <div id="adminPanel">
-            <div class="admin-title">⚙️ لوحة التحكم النابضة</div>
-            
-            <div class="admin-tabs">
-                <button class="admin-tab active" data-tab="dashboard">📊 الإحصائيات</button>
-                <button class="admin-tab" data-tab="prizes">🏆 الجوائز</button>
-                <button class="admin-tab" data-tab="cards">🖼️ صور البطاقات</button>
-                <button class="admin-tab" data-tab="settings">⚙️ الإعدادات</button>
-                <button class="admin-tab" data-tab="players">👥 اللاعبين</button>
-            </div>
-
-            <!-- تبويب الإحصائيات -->
-            <div class="admin-tab-content active" id="tab-dashboard">
-                <div class="admin-grid" id="adminStats">
-                    <div class="admin-card">
-                        <div class="number" id="adminTotalPlays">0</div>
-                        <div class="label">إجمالي الجولات</div>
-                    </div>
-                    <div class="admin-card">
-                        <div class="number" id="adminTotalWins">0</div>
-                        <div class="label">إجمالي الفوز</div>
-                    </div>
-                    <div class="admin-card">
-                        <div class="number" id="adminTotalLosses">0</div>
-                        <div class="label">إجمالي الخسارة</div>
-                    </div>
-                    <div class="admin-card">
-                        <div class="number" id="adminTotalPrizes">0</div>
-                        <div class="label">إجمالي الجوائز</div>
-                    </div>
-                    <div class="admin-card">
-                        <div class="number" id="adminUniquePlayers">0</div>
-                        <div class="label">اللاعبين</div>
-                    </div>
-                </div>
-                
-                <h3 style="color:rgba(255,255,255,0.3); margin:15px 0 10px; font-size:0.8rem; letter-spacing:2px;">🏆 أفضل اللاعبين</h3>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table" id="topPlayersTable">
-                        <thead><tr><th>اللاعب</th><th>الجولات</th><th>الفوز</th><th>الجوائز</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                
-                <h3 style="color:rgba(255,255,255,0.3); margin:15px 0 10px; font-size:0.8rem; letter-spacing:2px;">📋 آخر الجولات</h3>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table" id="recentPlaysTable">
-                        <thead><tr><th>اللاعب</th><th>الجائزة</th><th>القيمة</th><th>الحالة</th><th>التاريخ</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- تبويب الجوائز -->
-            <div class="admin-tab-content" id="tab-prizes">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
-                    <h3 style="color:rgba(255,255,255,0.3); font-size:0.8rem; letter-spacing:2px;">🏆 إدارة الجوائز (4 جوائز)</h3>
-                    <button class="btn-action btn-success" onclick="addPrize()">➕ إضافة جائزة</button>
-                </div>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table" id="prizesTable">
-                        <thead><tr><th>الرمز</th><th>الاسم</th><th>القيمة</th><th>الوزن</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                <div style="margin-top:15px; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                    <h4 style="color:rgba(255,255,255,0.3); font-size:0.7rem; letter-spacing:1px; margin-bottom:8px;">🍀 جائزة حظ أوفر</h4>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                        <input type="text" id="luckyName" value="🍀 حظ أوفر" style="flex:1; min-width:100px; padding:6px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05); border-radius:8px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.7rem;">
-                        <input type="number" id="luckyValue" value="100" style="width:80px; padding:6px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.05); border-radius:8px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.7rem;">
-                        <button class="btn-action btn-primary" onclick="updateLuckyPrize()">💾 حفظ</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- تبويب صور البطاقات -->
-            <div class="admin-tab-content" id="tab-cards">
-                <h3 style="color:rgba(255,255,255,0.3); font-size:0.8rem; letter-spacing:2px; margin-bottom:15px;">🖼️ صور البطاقات (4 صور)</h3>
-                <div id="cardImagesContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:15px;"></div>
-                <button class="btn-action btn-primary" onclick="saveCardImages()" style="margin-top:15px;">💾 حفظ الصور</button>
-            </div>
-
-            <!-- تبويب الإعدادات -->
-            <div class="admin-tab-content" id="tab-settings">
-                <h3 style="color:rgba(255,255,255,0.3); margin-bottom:15px; font-size:0.8rem; letter-spacing:2px;">⚙️ إعدادات اللعبة</h3>
-                <div class="settings-group" id="settingsGroup"></div>
-                <button class="btn-action btn-primary" onclick="saveAllSettings()">💾 حفظ الكل</button>
-            </div>
-
-            <!-- تبويب اللاعبين -->
-            <div class="admin-tab-content" id="tab-players">
-                <h3 style="color:rgba(255,255,255,0.3); margin-bottom:15px; font-size:0.8rem; letter-spacing:2px;">👥 إدارة اللاعبين</h3>
-                <div class="settings-group">
-                    <div class="settings-item">
-                        <label>إضافة إيداع</label>
-                        <input type="text" id="depositUserId" placeholder="معرف المستخدم" style="margin-bottom:6px;">
-                        <input type="number" id="depositAmount" placeholder="المبلغ" style="margin-bottom:6px;">
-                        <button class="btn-action btn-success" onclick="addDeposit()">💰 إضافة</button>
-                    </div>
-                </div>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table" id="playersTable">
-                        <thead><tr><th>اللاعب</th><th>الجولات</th><th>الفوز</th><th>الخسارة</th><th>الجوائز</th><th>آخر لعب</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- منطقة اللعبة -->
-        <div id="gameArea">
-            <div class="game-header">
-                <div class="prize-display">
-                    🎯 الجائزة الكبرى: <span class="highlight" id="grandPrize">🔥 10000 SYP</span>
-                </div>
-                <div class="attempts-display" id="attemptsDisplay"></div>
-            </div>
-            <div class="cards-grid" id="cardsGrid"></div>
-        </div>
-
-        <!-- زر البدء -->
-        <button class="btn-start" id="startGameBtn">🚀 ابدأ المغامرة</button>
     </div>
 
-    <!-- نافذة النتيجة -->
+    <!-- ============================================================
+    منطقة اللعبة الرئيسية
+    ============================================================ -->
+    <div id="gameArea">
+        <div class="game-header">
+            <div class="prize-display">
+                🎯 الجائزة الكبرى: <span class="highlight" id="grandPrize">🔥 10000 SYP</span>
+            </div>
+            <div class="attempts-display" id="attemptsDisplay"></div>
+        </div>
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <!-- ============================================================
+    زر بدء اللعبة
+    ============================================================ -->
+    <button class="btn-start" id="startGameBtn">🚀 ابدأ المغامرة</button>
+
+    <!-- ============================================================
+    زر ملء الشاشة
+    ============================================================ -->
+    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" aria-label="ملء الشاشة">⛶</button>
+
+    <!-- ============================================================
+    نافذة النتيجة
+    ============================================================ -->
     <div id="resultModal">
         <div class="modal-content">
             <div class="modal-title" id="resultTitle">🎉 فوز!</div>
             <div class="modal-prize" id="resultPrize">🔥</div>
             <div class="modal-prize-value" id="resultValue">+10000 SYP</div>
             <div class="modal-detail" id="resultDetail"></div>
-            <button class="btn-action btn-gradient" onclick="closeResult()">🔄 العب مجدداً</button>
+            <button class="modal-btn" onclick="closeResult()">🔄 العب مجدداً</button>
         </div>
     </div>
 
+    <!-- ============================================================
+    تأثير الفوز
+    ============================================================ -->
+    <div class="win-overlay" id="winOverlay"></div>
+
+    <!-- ============================================================
+    رسائل التنبيه
+    ============================================================ -->
+    <div class="error-toast" id="errorToast"></div>
+
+    <!-- ============================================================
+    لوحة الإدارة (للمشرف فقط)
+    ============================================================ -->
+    <div id="adminPanel">
+        <button class="admin-close" onclick="closeAdminPanel()" aria-label="إغلاق">✕</button>
+        <div class="admin-panel-title">⚙️ لوحة التحكم</div>
+        <div id="adminContent">
+            <div style="color:rgba(255,255,255,0.25); font-size:0.8rem; text-align:center; padding:30px;">
+                ⏳ جاري تحميل البيانات...
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+    جافا سكريبت - قلب اللعبة النابض
+    ============================================================ -->
     <script>
         // ============================================================
-        // جزيئات ناعمة
+        //  1.  المتغيرات العامة وإعدادات الخادم
         // ============================================================
-        
-        function createParticlesSmooth() {
-            const container = document.getElementById('particlesSmooth');
-            const colors = ['#00ffff', '#ff00ff', '#ffd700', '#ff0066', '#00ff88', '#00ccff'];
-            
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle-smooth';
-                const size = Math.random() * 4 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.boxShadow = `0 0 ${size * 4}px ${particle.style.background}`;
-                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                particle.style.animationDelay = (Math.random() * 30) + 's';
-                particle.style.opacity = Math.random() * 0.4 + 0.05;
-                container.appendChild(particle);
-            }
-        }
-        createParticlesSmooth();
 
-        // ============================================================
-        // المتغيرات العامة
-        // ============================================================
-        
-        const ADMIN_ID = '7011476249';
+        // --- رابط الخادم الرئيسي (تم تحديده مباشرة) ---
         const SERVER_URL = 'https://kro-7yvq.onrender.com';
+
+        // --- معرف المدير الثابت ---
+        const ADMIN_ID = '7011476249';
+
+        // --- متغيرات حالة اللعبة ---
         let socket = null;
         let userId = '';
         let isGameActive = false;
@@ -1561,42 +1533,119 @@
         let gameState = null;
         let reconnectAttempts = 0;
         let cooldownInterval = null;
-        const MAX_RECONNECT_ATTEMPTS = 20;
+        let audioContext = null;
+        const MAX_RECONNECT_ATTEMPTS = 25;
 
         // ============================================================
-        // استخراج معرف المستخدم من الرابط
+        //  2.  نظام الصوت الاحترافي
         // ============================================================
-        
+
+        function initAudio() {
+            try {
+                audioContext = new(window.AudioContext || window.webkitAudioContext)();
+            } catch (_) { /* تجاهل الأخطاء */ }
+        }
+
+        function playSound(type) {
+            if (!audioContext) return;
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                switch (type) {
+                    case 'click':
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.08);
+                        break;
+                    case 'flip':
+                        oscillator.frequency.value = 500;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.12);
+                        break;
+                    case 'win':
+                        [523, 659, 784, 1047, 1318].forEach((freq, i) => {
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.frequency.value = freq;
+                            osc.type = 'sine';
+                            gain.gain.setValueAtTime(0.08, audioContext.currentTime + i * 0.13);
+                            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + i * 0.13 + 0.2);
+                            osc.start(audioContext.currentTime + i * 0.13);
+                            osc.stop(audioContext.currentTime + i * 0.13 + 0.2);
+                        });
+                        break;
+                    case 'lose':
+                        oscillator.frequency.value = 250;
+                        oscillator.type = 'sawtooth';
+                        gainNode.gain.setValueAtTime(0.04, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        break;
+                    case 'match':
+                        oscillator.frequency.value = 650;
+                        oscillator.type = 'square';
+                        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                }
+            } catch (_) { /* تجاهل أخطاء الصوت */ }
+        }
+
+        // ============================================================
+        //  3.  استخراج معرف المستخدم
+        // ============================================================
+
         function getUserIdFromURL() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('user');
             if (id && id.length > 3) return id;
             const saved = localStorage.getItem('jackpot_user_id');
             if (saved && saved.length > 3) return saved;
-            const randomId = 'user_' + Math.random().toString(36).substr(2, 9);
+            const randomId = 'user_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
             localStorage.setItem('jackpot_user_id', randomId);
             return randomId;
         }
 
         userId = getUserIdFromURL();
-        isAdmin = userId === ADMIN_ID;
+        isAdmin = (userId === ADMIN_ID);
         localStorage.setItem('jackpot_user_id', userId);
 
         // ============================================================
-        // شاشة التحميل
+        //  4.  شاشة التحميل المتطورة
         // ============================================================
-        
+
         function updateLoading(progress, text) {
-            document.getElementById('loadingBar').style.width = Math.min(progress, 100) + '%';
-            if (text) document.getElementById('loadingText').textContent = text;
+            const bar = document.getElementById('loadingBar');
+            const percent = document.getElementById('loadingPercent');
+            const label = document.getElementById('loadingText');
+
+            const p = Math.min(Math.max(progress, 0), 100);
+            bar.style.width = p + '%';
+            percent.textContent = p + '%';
+            if (text) label.textContent = text;
         }
 
         async function showLoading() {
             const screen = document.getElementById('loadingScreen');
             screen.classList.remove('hidden');
-            for (let i = 0; i <= 100; i += 1) {
-                updateLoading(i, `جاري تحميل عالم النشاط... ${i}%`);
-                await new Promise(r => setTimeout(r, 15 + Math.random() * 15));
+            // محاكاة تقدم سلس وطبيعي
+            for (let i = 0; i <= 100; i += 0.8) {
+                updateLoading(i, `جاري تحميل العالم`);
+                await new Promise(r => setTimeout(r, 10 + Math.random() * 12));
             }
         }
 
@@ -1605,10 +1654,10 @@
         }
 
         // ============================================================
-        // دوال الشبكة
+        //  5.  دوال الشبكة والاتصال بالخادم
         // ============================================================
-        
-        async function fetchWithTimeout(url, options = {}, timeout = 10000) {
+
+        async function fetchWithTimeout(url, options = {}, timeout = 12000) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeout);
             try {
@@ -1625,167 +1674,205 @@
             }
         }
 
-        async function fetchUserData(userId, retries = 3) {
+        async function fetchUserData(userId, retries = 4) {
             for (let i = 0; i < retries; i++) {
                 try {
-                    const response = await fetchWithTimeout(`${SERVER_URL}/api/user/${userId}`, {}, 10000);
+                    const response = await fetchWithTimeout(`${SERVER_URL}/api/user/${userId}`, {}, 12000);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     return await response.json();
                 } catch (error) {
-                    if (i < retries - 1) await new Promise(r => setTimeout(r, 2000 * (i + 1)));
-                    else throw error;
+                    if (i < retries - 1) {
+                        await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+                    } else {
+                        throw error;
+                    }
                 }
             }
         }
 
         // ============================================================
-        // الاتصال بالخادم
+        //  6.  الاتصال عبر Socket.IO مع إعادة محاولة قوية
         // ============================================================
-        
+
         function connectSocket() {
             if (socket && socket.connected) return;
 
-            updateLoading(50, '🔄 جاري الاتصال...');
-            showStatus('🔄 جاري الاتصال بالخادم...', 'info');
+            updateLoading(45, '🔄 جاري الاتصال بالخادم');
 
             socket = io(SERVER_URL, {
                 transports: ['websocket', 'polling'],
                 reconnection: true,
                 reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
                 reconnectionDelay: 2000,
-                reconnectionDelayMax: 10000,
-                timeout: 15000,
-                pingTimeout: 60000,
-                pingInterval: 25000
+                reconnectionDelayMax: 12000,
+                timeout: 18000,
+                pingTimeout: 65000,
+                pingInterval: 25000,
+                upgrade: true,
+                forceNew: true
             });
 
             socket.on('connect', () => {
                 reconnectAttempts = 0;
-                updateLoading(80, '✅ متصل');
-                hideStatus();
+                updateLoading(75, '✅ متصل بالخادم');
+                hideToast();
                 authenticateUser();
             });
 
             socket.on('connect_error', (error) => {
                 reconnectAttempts++;
-                updateLoading(55 + Math.min(reconnectAttempts * 2, 30), `⚠️ محاولة ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
-                showStatus(`⚠️ محاولة الاتصال ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}...`, 'info');
+                const progress = 50 + Math.min(reconnectAttempts * 2, 30);
+                updateLoading(progress, `⚠️ محاولة ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
                 if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-                    showStatus('❌ لا يمكن الاتصال بالخادم', 'error');
+                    showToast('❌ تعذر الاتصال بالخادم، تأكد من تشغيله', 'error');
                     updateLoading(100, '❌ فشل الاتصال');
                 }
             });
 
             socket.on('disconnect', (reason) => {
-                if (reason === 'io server disconnect') setTimeout(() => socket.connect(), 2000);
-                if (isGameActive) showStatus('⚠️ انقطع الاتصال، جاري إعادة المحاولة...', 'info');
+                if (isGameActive) {
+                    showToast('⚠️ انقطع الاتصال، جاري إعادة المحاولة...', 'info');
+                }
             });
 
             socket.on('reconnect', () => {
                 reconnectAttempts = 0;
                 updateLoading(90, '✅ أعيد الاتصال');
-                setTimeout(hideStatus, 2000);
+                setTimeout(hideToast, 2000);
                 authenticateUser();
             });
 
+            // --- مستمعي أحداث اللعبة ---
             socket.on('game_started', handleGameStarted);
             socket.on('card_revealed', handleCardRevealed);
             socket.on('game_won', handleGameWon);
             socket.on('game_lost', handleGameLost);
-            socket.on('win_notification', handleWinNotification);
             socket.on('cooldown', handleCooldown);
-            
+
             socket.on('error', (data) => {
-                if (data.code === 'DEPOSIT_REQUIRED') {
-                    showStatus(data.message, 'error');
-                    document.getElementById('startGameBtn').style.display = 'none';
-                    setTimeout(hideLoading, 3000);
-                } else {
-                    showStatus(data.message || 'حدث خطأ', 'error');
-                }
+                showToast(data.message || '⚠️ حدث خطأ في الخادم', 'error');
             });
         }
 
         // ============================================================
-        // مصادقة المستخدم
+        //  7.  مصادقة المستخدم وجلب البيانات
         // ============================================================
-        
+
         async function authenticateUser() {
-            updateLoading(85, '🔐 جاري التحقق...');
+            updateLoading(85, '🔐 جاري التحقق من هويتك');
             socket.emit('join', { userId });
-            
+
             try {
                 const data = await fetchUserData(userId);
-                if (data.success) {
-                    updateLoading(95, '🌟 مرحباً!');
-                    document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
-                    document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
-                    document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
-                    
+                if (data && data.success) {
+                    updateLoading(95, '🌟 مرحباً بك!');
+
+                    // --- تحديث واجهة المستخدم ---
+                    if (isAdmin) {
+                        document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
+                        document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
+                        document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
+                        document.getElementById('adminStatsHeader').classList.add('show');
+                    } else {
+                        document.getElementById('adminStatsHeader').classList.remove('show');
+                    }
+
                     const badge = document.getElementById('userBadge');
                     if (data.user.isAdmin) {
                         badge.textContent = '👑 مدير';
                         badge.classList.add('admin');
                         isAdmin = true;
-                        document.getElementById('adminPanel').classList.add('show');
-                        loadAdminStats();
-                        loadSettings();
-                        loadPrizes();
-                        loadCardImages();
+                        document.getElementById('adminToggle').style.display = 'block';
+                        loadAdminData();
                     } else {
                         badge.textContent = '🌟 لاعب';
                         badge.classList.remove('admin');
+                        document.getElementById('adminToggle').style.display = 'none';
                     }
-                    
+
+                    // --- تحميل الإعدادات ---
+                    await loadSettings();
+
+                    // --- التحقق من صلاحية اللعب (Cooldown) ---
                     if (data.user.cooldown?.allowed) {
                         document.getElementById('startGameBtn').style.display = 'block';
-                    } else {
-                        document.getElementById('startGameBtn').style.display = 'none';
-                        if (data.user.cooldown?.remaining) {
-                            showCooldown(data.user.cooldown.remaining);
-                        }
+                    } else if (data.user.cooldown?.remaining) {
+                        showCooldown(data.user.cooldown.remaining);
                     }
-                    
-                    setTimeout(() => { updateLoading(100, '✅ جاهز!'); setTimeout(hideLoading, 500); }, 500);
+
+                    setTimeout(() => {
+                        updateLoading(100, '✅ جاهز للانطلاق!');
+                        setTimeout(hideLoading, 400);
+                    }, 400);
                 }
             } catch (error) {
                 updateLoading(90, '⚠️ خطأ في جلب البيانات');
-                showStatus(`❌ ${error.message}`, 'error');
-                setTimeout(() => { if (!socket.connected) socket.connect(); }, 5000);
+                showToast(`❌ ${error.message || 'فشل الاتصال بالخادم'}`, 'error');
+                setTimeout(() => {
+                    if (socket && !socket.connected) socket.connect();
+                }, 5000);
             }
         }
 
         // ============================================================
-        // دوال الحالة
+        //  8.  تحميل إعدادات اللعبة من الخادم
         // ============================================================
-        
-        function showStatus(message, type = 'error') {
-            const el = document.getElementById('errorMessage');
+
+        async function loadSettings() {
+            try {
+                const response = await fetchWithTimeout(`${SERVER_URL}/api/settings`, {}, 8000);
+                if (!response.ok) return;
+                const data = await response.json();
+                if (data && data.success) {
+                    // تحديث الخلفية
+                    if (data.settings.background_image?.url) {
+                        document.getElementById('gameBackground').style.backgroundImage = `url(${data.settings.background_image.url})`;
+                    }
+                    // تحديث صورة خلفية التحميل
+                    if (data.settings.loading_image?.url) {
+                        document.getElementById('loadingBgImage').src = data.settings.loading_image.url;
+                    }
+                    // تحديث عنوان اللعبة
+                    if (data.settings.game_title?.text) {
+                        document.getElementById('gameTitle').textContent = data.settings.game_title.text;
+                    }
+                }
+            } catch (_) { /* تجاهل */ }
+        }
+
+        // ============================================================
+        //  9.  دوال الإشعارات والحالة
+        // ============================================================
+
+        function showToast(message, type = 'error') {
+            const el = document.getElementById('errorToast');
             el.textContent = message;
-            el.className = 'error-message show' + (type === 'info' ? ' info' : '');
-            setTimeout(() => el.classList.remove('show'), 8000);
+            el.className = 'error-toast show' + (type === 'info' ? ' info' : '');
+            clearTimeout(el._hideTimeout);
+            el._hideTimeout = setTimeout(() => el.classList.remove('show'), 7000);
         }
 
-        function hideStatus() {
-            document.getElementById('errorMessage').classList.remove('show');
+        function hideToast() {
+            const el = document.getElementById('errorToast');
+            el.classList.remove('show');
         }
 
         // ============================================================
-        // مؤقت الإنتظار (Cooldown)
+        //  10. مؤقت الإنتظار (Cooldown)
         // ============================================================
-        
+
         function showCooldown(remainingHours) {
-            const display = document.getElementById('cooldownDisplay');
-            display.classList.add('show');
-            
-            let totalSeconds = Math.ceil(remainingHours * 3600);
-            
+            const overlay = document.getElementById('cooldownOverlay');
+            overlay.classList.add('show');
+
+            let totalSeconds = Math.ceil(Math.max(remainingHours * 3600, 1));
+
             if (cooldownInterval) clearInterval(cooldownInterval);
-            
+
             cooldownInterval = setInterval(() => {
                 if (totalSeconds <= 0) {
                     clearInterval(cooldownInterval);
-                    display.classList.remove('show');
+                    overlay.classList.remove('show');
                     document.getElementById('startGameBtn').style.display = 'block';
                     return;
                 }
@@ -1793,574 +1880,414 @@
                 const hours = Math.floor(totalSeconds / 3600);
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 const seconds = totalSeconds % 60;
-                document.getElementById('cooldownTimer').textContent = 
+                document.getElementById('cooldownTimer').textContent =
                     `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }, 1000);
         }
 
         function handleCooldown(data) {
-            if (data.remaining > 0) {
+            if (data && data.remaining > 0) {
                 showCooldown(data.remaining);
-                showStatus(data.message, 'info');
+                showToast(data.message || '⏳ يرجى الانتظار', 'info');
             }
         }
 
         // ============================================================
-        // دوال اللعبة
+        //  11. دوال اللعبة الأساسية
         // ============================================================
-        
+
         function startGame() {
-            if (isGameActive || !socket?.connected) {
-                if (!socket?.connected) showStatus('❌ غير متصل بالخادم', 'error');
+            if (isGameActive || !socket || !socket.connected) {
+                if (!socket || !socket.connected) showToast('❌ غير متصل بالخادم', 'error');
                 return;
             }
-            hideStatus();
+            hideToast();
             document.getElementById('gameArea').classList.remove('show');
             document.getElementById('cardsGrid').innerHTML = '';
             document.getElementById('attemptsDisplay').innerHTML = '';
-            showStatus('⏳ جاري تجهيز اللعبة...', 'info');
+            showToast('⏳ جاري تجهيز اللعبة...', 'info');
             socket.emit('join', { userId });
+            playSound('click');
         }
 
         function handleGameStarted(data) {
-            hideStatus();
+            if (!data) return;
+            hideToast();
             document.getElementById('gameArea').classList.add('show');
             gameState = data;
             isGameActive = true;
-            document.getElementById('grandPrize').textContent = `${data.prize.prize_icon} ${data.prize.prize_value} SYP`;
-            
+
+            document.getElementById('grandPrize').textContent =
+                `${data.prize?.prize_icon || '🔥'} ${data.prize?.prize_value || 10000} SYP`;
+
+            // --- عرض نقاط المحاولات ---
             const attemptsDisplay = document.getElementById('attemptsDisplay');
             attemptsDisplay.innerHTML = '';
-            for (let i = 0; i < data.maxAttempts; i++) {
+            for (let i = 0; i < (data.maxAttempts || 5); i++) {
                 const dot = document.createElement('div');
                 dot.className = 'attempt-dot active';
                 attemptsDisplay.appendChild(dot);
             }
-            
+
+            // --- إنشاء البطاقات ---
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
-            data.cards.forEach((card, index) => {
+            const cards = data.cards || [];
+            const backImage = data.cardBackImage || 'https://i.imgur.com/cardback.jpg';
+
+            cards.forEach((card, index) => {
                 const container = document.createElement('div');
                 container.className = 'card-container';
                 container.dataset.index = index;
-                
+
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card';
                 cardEl.dataset.index = index;
-                
+
+                // الوجه الخلفي (ظهر البطاقة)
                 const back = document.createElement('div');
                 back.className = 'card-face card-back';
-                back.innerHTML = `<div class="fire-effect"></div><div class="card-icon">🎰</div>`;
-                
+                back.innerHTML = `
+                            <img class="card-back-image" src="${backImage}" alt="Card Back" loading="lazy">
+                            <div class="fire-effect"></div>
+                            <div class="card-icon-overlay">🎰</div>
+                        `;
+
+                // الوجه الأمامي (رمز البطاقة)
                 const front = document.createElement('div');
                 front.className = 'card-face card-front';
-                front.innerHTML = `<div class="symbol-text">${card.symbol}</div>`;
-                
+                front.innerHTML = `<div class="symbol-text">${card.symbol || '?'}</div>`;
+
                 cardEl.appendChild(back);
                 cardEl.appendChild(front);
                 container.appendChild(cardEl);
+
                 container.addEventListener('click', () => revealCard(index));
                 grid.appendChild(container);
             });
+
             document.getElementById('startGameBtn').style.display = 'none';
         }
 
         function revealCard(index) {
             if (!isGameActive || !gameState) return;
-            if (gameState.cards[index].isRevealed || gameState.cards[index].isMatched) return;
+            const card = gameState.cards?.[index];
+            if (!card || card.isRevealed || card.isMatched) return;
+            playSound('flip');
             socket.emit('reveal_card', { cardId: index });
         }
 
         function handleCardRevealed(data) {
+            if (!data) return;
             const container = document.querySelector(`.card-container[data-index="${data.cardId}"]`);
             if (!container) return;
-            
+
             const card = container.querySelector('.card');
             card.classList.add('flipped');
-            
-            // تحديث الصورة إذا كانت موجودة
+
+            const front = card.querySelector('.card-front');
             if (data.imageUrl) {
-                const front = card.querySelector('.card-front');
-                front.innerHTML = `<img src="${data.imageUrl}" alt="${data.symbol}">`;
+                front.innerHTML = `<img class="card-symbol-image" src="${data.imageUrl}" alt="${data.symbol}" loading="lazy">`;
             } else {
-                const front = card.querySelector('.card-front');
-                front.innerHTML = `<div class="symbol-text">${data.symbol}</div>`;
+                front.innerHTML = `<div class="symbol-text">${data.symbol || '?'}</div>`;
             }
-            
+
+            // تحديث نقاط المحاولات
             const dots = document.querySelectorAll('.attempt-dot');
             dots.forEach((dot, i) => {
-                dot.className = i < data.attempts ? 'attempt-dot used' : 'attempt-dot active';
+                const attempts = data.attempts || 0;
+                dot.className = i < attempts ? 'attempt-dot used' : 'attempt-dot active';
             });
         }
 
         function handleGameWon(data) {
+            if (!data) return;
             isGameActive = false;
             document.getElementById('startGameBtn').style.display = 'block';
             document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
-            
-            data.matchedCards.forEach(card => {
-                const container = document.querySelector(`.card-container[data-index="${card.id}"]`);
-                if (container) {
-                    container.querySelector('.card').classList.add('matched');
+            playSound('win');
+
+            // --- تأثير الفوز: إخفاء البطاقات غير الرابحة ---
+            const matchedIds = (data.matchedCards || []).map(c => c.id);
+            const allCards = document.querySelectorAll('.card-container');
+            allCards.forEach((container, index) => {
+                if (!matchedIds.includes(index)) {
+                    container.style.transition = 'all 0.6s var(--transition-smooth)';
+                    setTimeout(() => {
+                        container.style.opacity = '0';
+                        container.style.transform = 'scale(0.4) rotateY(90deg)';
+                        container.style.pointerEvents = 'none';
+                    }, 100);
+                } else {
+                    const card = container.querySelector('.card');
+                    card.classList.add('matched');
+                    container.style.transform = 'translateY(-12px) scale(1.06)';
+                    container.style.boxShadow = '0 25px 70px rgba(255, 215, 0, 0.25)';
                 }
             });
-            
+
+            // --- تأثير الفوز على الشاشة ---
+            const overlay = document.getElementById('winOverlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 600);
+
             showResult(true, data.prize);
             playWinEffect();
             updateUserStats();
         }
 
         function handleGameLost(data) {
+            if (!data) return;
             isGameActive = false;
             document.getElementById('startGameBtn').style.display = 'block';
             document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
-            
-            data.allCards.forEach(c => {
+            playSound('lose');
+
+            // --- كشف جميع البطاقات ---
+            const allCards = data.allCards || [];
+            allCards.forEach((c, index) => {
                 const container = document.querySelector(`.card-container[data-index="${c.id}"]`);
                 if (container) {
                     const card = container.querySelector('.card');
                     const front = card.querySelector('.card-front');
                     if (c.imageUrl) {
-                        front.innerHTML = `<img src="${c.imageUrl}" alt="${c.symbol}">`;
+                        front.innerHTML = `<img class="card-symbol-image" src="${c.imageUrl}" alt="${c.symbol}" loading="lazy">`;
                     } else {
-                        front.innerHTML = `<div class="symbol-text">${c.symbol}</div>`;
+                        front.innerHTML = `<div class="symbol-text">${c.symbol || '?'}</div>`;
                     }
-                    card.classList.add('flipped');
+                    setTimeout(() => card.classList.add('flipped'), index * 70);
                 }
             });
-            
-            showResult(false, data.luckyPrize, data.message);
+
+            setTimeout(() => {
+                showResult(false, data.luckyPrize, data.message);
+            }, allCards.length * 70 + 600);
+
             updateUserStats();
         }
 
-        function handleWinNotification(data) {
-            // يمكن إضافة إشعارات هنا
-        }
+        // ============================================================
+        //  12. عرض نافذة النتيجة
+        // ============================================================
 
-        // ============================================================
-        // عرض النتيجة
-        // ============================================================
-        
         function showResult(isWin, prize, message) {
             const modal = document.getElementById('resultModal');
-            document.getElementById('resultTitle').className = 'modal-title ' + (isWin ? 'win' : 'lose');
-            document.getElementById('resultTitle').textContent = isWin ? '🎉 فوز! تهانينا!' : '🍀 حظ أوفر!';
-            document.getElementById('resultPrize').textContent = isWin ? prize?.prize_icon || '🎁' : prize?.prize_icon || '🍀';
-            document.getElementById('resultValue').textContent = isWin ? `+${prize?.prize_value || 0} SYP` : `+${prize?.prize_value || 100} SYP`;
-            document.getElementById('resultDetail').textContent = isWin ? `🎁 ${prize?.prize_name || 'جائزة'}` : (message || 'جائزة ترضية');
+            const title = document.getElementById('resultTitle');
+            const prizeEl = document.getElementById('resultPrize');
+            const valueEl = document.getElementById('resultValue');
+            const detailEl = document.getElementById('resultDetail');
+
+            title.className = 'modal-title ' + (isWin ? 'win' : 'lose');
+            title.textContent = isWin ? '🎉 فوز! تهانينا!' : '🍀 حظ أوفر!';
+            prizeEl.textContent = isWin ? (prize?.prize_icon || '🎁') : (prize?.prize_icon || '🍀');
+            valueEl.textContent = isWin ? `+${prize?.prize_value || 0} SYP` : `+${prize?.prize_value || 100} SYP`;
+            detailEl.textContent = isWin ? `🎁 ${prize?.prize_name || 'جائزة'}` : (message || 'جائزة ترضية');
+
             modal.classList.add('show');
+            if (isWin) playSound('win');
         }
 
         function closeResult() {
             document.getElementById('resultModal').classList.remove('show');
+            // إعادة تعيين البطاقات
+            document.querySelectorAll('.card-container').forEach(container => {
+                container.style.opacity = '1';
+                container.style.transform = '';
+                container.style.boxShadow = '';
+                container.style.pointerEvents = '';
+            });
         }
 
         // ============================================================
-        // تحديث الإحصائيات
+        //  13. تحديث إحصائيات المستخدم
         // ============================================================
-        
+
         async function updateUserStats() {
             try {
                 const data = await fetchUserData(userId);
-                if (data.success) {
+                if (data && data.success && isAdmin) {
                     document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
                     document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
                     document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
                 }
-            } catch (e) {}
-            if (isAdmin) loadAdminStats();
+            } catch (_) { /* تجاهل */ }
+            if (isAdmin) loadAdminData();
         }
 
         // ============================================================
-        // مؤثرات الفوز
+        //  14. مؤثرات الفوز (نثار)
         // ============================================================
-        
+
         function playWinEffect() {
             const container = document.createElement('div');
             container.className = 'confetti-container';
             document.body.appendChild(container);
-            
-            const colors = ['#ff4444', '#ffd700', '#00ff88', '#00ccff', '#ff00ff', '#ff6600', '#00ffff'];
-            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦'];
-            
-            for (let i = 0; i < 100; i++) {
+
+            const colors = ['#ff4444', '#ffd700', '#00ff88', '#00ccff', '#ff00ff', '#ff6600', '#00ffff', '#ffaa00', '#ff6b6b'];
+            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦', '✿', '✦'];
+
+            for (let i = 0; i < 180; i++) {
                 const el = document.createElement('div');
-                el.className = 'confetti';
+                el.className = 'confetti-piece';
                 el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
                 el.style.left = Math.random() * 100 + '%';
                 el.style.color = colors[Math.floor(Math.random() * colors.length)];
-                el.style.fontSize = (Math.random() * 20 + 8) + 'px';
-                el.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                el.style.animationDelay = (Math.random() * 1.2) + 's';
+                el.style.fontSize = (Math.random() * 24 + 8) + 'px';
+                el.style.animationDuration = (Math.random() * 3.5 + 1.8) + 's';
+                el.style.animationDelay = (Math.random() * 1.8) + 's';
                 container.appendChild(el);
             }
-            setTimeout(() => container.remove(), 5000);
+            setTimeout(() => container.remove(), 5500);
         }
 
         // ============================================================
-        // لوحة الإدارة - الإحصائيات
+        //  15. لوحة الإدارة (للمشرف)
         // ============================================================
-        
-        async function loadAdminStats() {
+
+        let adminDataLoaded = false;
+
+        async function loadAdminData() {
             if (!isAdmin) return;
             try {
                 const response = await fetchWithTimeout(`${SERVER_URL}/api/admin/stats?userId=${userId}`, {}, 8000);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
-                if (data.success) {
-                    document.getElementById('adminTotalPlays').textContent = data.stats.global.total_plays || 0;
-                    document.getElementById('adminTotalWins').textContent = data.stats.global.total_wins || 0;
-                    document.getElementById('adminTotalLosses').textContent = data.stats.global.total_losses || 0;
-                    document.getElementById('adminTotalPrizes').textContent = data.stats.global.total_prizes || 0;
-                    document.getElementById('adminUniquePlayers').textContent = data.stats.global.unique_players || 0;
-                    
-                    const topBody = document.querySelector('#topPlayersTable tbody');
-                    topBody.innerHTML = '';
-                    (data.stats.topPlayers || []).forEach(p => {
-                        topBody.innerHTML += `<tr><td><code style="color:cyan;font-size:0.65rem;">${p.user_id}</code></td><td>${p.total_plays}</td><td>${p.total_wins}</td><td style="color:#ffd700;">${p.total_prize_value} SYP</td></tr>`;
-                    });
-                    
-                    const recentBody = document.querySelector('#recentPlaysTable tbody');
-                    recentBody.innerHTML = '';
-                    (data.stats.recentPlays || []).forEach(p => {
-                        const status = p.is_winner ? '<span style="color:#00ff88;">✅ فوز</span>' : '<span style="color:#ff4466;">🍀 حظ أوفر</span>';
-                        recentBody.innerHTML += `<tr><td><code style="color:cyan;font-size:0.6rem;">${p.user_id}</code></td><td>${p.prize_name || 'لا جائزة'}</td><td>${p.prize_value || 0} SYP</td><td>${status}</td><td style="font-size:0.55rem;color:rgba(255,255,255,0.3);">${p.formatted_date || p.play_date}</td></tr>`;
-                    });
-                }
-            } catch (e) { console.error('❌ Admin stats error:', e); }
-        }
-
-        // ============================================================
-        // لوحة الإدارة - الجوائز
-        // ============================================================
-        
-        async function loadPrizes() {
-            if (!isAdmin) return;
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/admin/stats?userId=${userId}`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.success && data.stats.allPrizes) {
-                    const tbody = document.querySelector('#prizesTable tbody');
-                    tbody.innerHTML = '';
-                    data.stats.allPrizes.forEach(p => {
-                        const status = p.is_active ? '<span style="color:#00ff88;">✅ مفعل</span>' : '<span style="color:#ff4466;">❌ معطل</span>';
-                        tbody.innerHTML += `<tr><td style="font-size:1.3rem;">${p.prize_icon}</td><td>${p.prize_name}</td><td style="color:#ffd700;">${p.prize_value} SYP</td><td>${p.weight}</td><td>${status}</td><td><button class="btn-action" style="padding:2px 10px;font-size:0.5rem;" onclick="editPrize(${p.id})">✏️</button><button class="btn-action btn-danger" style="padding:2px 10px;font-size:0.5rem;" onclick="deletePrize(${p.id})">🗑️</button></td></tr>`;
-                    });
-                }
-                // تحميل جائزة حظ أوفر
-                if (data.stats.luckyPrize) {
-                    document.getElementById('luckyName').value = data.stats.luckyPrize.name || '🍀 حظ أوفر';
-                    document.getElementById('luckyValue').value = data.stats.luckyPrize.value || 100;
-                }
-            } catch (e) { console.error('❌ Prizes error:', e); }
-        }
-
-        function addPrize() {
-            const name = prompt('اسم الجائزة:');
-            if (!name) return;
-            const value = prompt('القيمة:');
-            if (!value) return;
-            const icon = prompt('الرمز (مثل 🔥):');
-            if (!icon) return;
-            const symbol = prompt('رمز البطاقة (♠♥♦♣):', '♠');
-            if (!symbol) return;
-            const weight = prompt('الوزن (كلما زاد زادت فرصة الظهور):', '1');
-            
-            fetch(`${SERVER_URL}/api/admin/prizes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, prize: { prize_name: name, prize_value: parseInt(value), prize_icon: icon, prize_symbol: symbol, weight: parseInt(weight) || 1, is_active: true } })
-            }).then(r => r.json()).then(d => { if (d.success) { alert('✅ تم الإضافة'); loadPrizes(); } else alert('❌ فشل'); });
-        }
-
-        function editPrize(id) {
-            const name = prompt('الاسم الجديد:');
-            if (!name) return;
-            const value = prompt('القيمة الجديدة:');
-            if (!value) return;
-            const icon = prompt('الرمز الجديد:');
-            if (!icon) return;
-            const symbol = prompt('رمز البطاقة الجديد:');
-            if (!symbol) return;
-            const weight = prompt('الوزن الجديد:', '1');
-            const active = confirm('مفعل؟');
-            
-            fetch(`${SERVER_URL}/api/admin/prizes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, prize: { id, prize_name: name, prize_value: parseInt(value), prize_icon: icon, prize_symbol: symbol, weight: parseInt(weight) || 1, is_active: active } })
-            }).then(r => r.json()).then(d => { if (d.success) { alert('✅ تم التحديث'); loadPrizes(); } else alert('❌ فشل'); });
-        }
-
-        function deletePrize(id) {
-            if (!confirm('هل أنت متأكد من حذف هذه الجائزة؟')) return;
-            fetch(`${SERVER_URL}/api/admin/prizes/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
-            }).then(r => r.json()).then(d => { if (d.success) { alert('✅ تم الحذف'); loadPrizes(); } else alert('❌ فشل'); });
-        }
-
-        async function updateLuckyPrize() {
-            const name = document.getElementById('luckyName').value.trim();
-            const value = parseInt(document.getElementById('luckyValue').value) || 100;
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/lucky-prize`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, luckyPrize: { name, value, icon: '🍀' } })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert('✅ تم تحديث جائزة حظ أوفر');
-                } else {
-                    alert('❌ فشل التحديث');
+                if (data && data.success) {
+                    adminDataLoaded = true;
+                    renderAdminPanel(data);
                 }
             } catch (e) {
-                alert('❌ خطأ في التحديث');
-            }
-        }
-
-        // ============================================================
-        // لوحة الإدارة - صور البطاقات
-        // ============================================================
-        
-        async function loadCardImages() {
-            if (!isAdmin) return;
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/admin/stats?userId=${userId}`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.success && data.stats.cardImages) {
-                    const container = document.getElementById('cardImagesContainer');
-                    container.innerHTML = '';
-                    data.stats.cardImages.forEach((img, index) => {
-                        const div = document.createElement('div');
-                        div.className = 'settings-item';
-                        div.innerHTML = `
-                            <label>البطاقة ${index + 1} (${img.symbol})</label>
-                            <input type="url" id="cardImg_${index}" value="${img.image_url}" placeholder="رابط الصورة" style="margin-bottom:6px;">
-                            <input type="text" id="cardSymbol_${index}" value="${img.symbol}" placeholder="الرمز" style="margin-bottom:6px; width:60px;">
-                            <div style="display:flex; gap:6px; align-items:center;">
-                                <img src="${img.image_url}" alt="${img.symbol}" style="width:40px; height:40px; object-fit:contain; border-radius:8px; background:rgba(255,255,255,0.05);">
-                                <span style="font-size:0.6rem; color:rgba(255,255,255,0.3);">معاينة</span>
+                document.getElementById('adminContent').innerHTML = `
+                            <div style="color:#ff4466; text-align:center; padding:25px;">
+                                ❌ فشل تحميل بيانات الإدارة
                             </div>
                         `;
-                        container.appendChild(div);
-                    });
-                }
-            } catch (e) { console.error('❌ Card images error:', e); }
+            }
         }
 
-        async function saveCardImages() {
-            const images = [];
-            for (let i = 0; i < 4; i++) {
-                const url = document.getElementById(`cardImg_${i}`)?.value;
-                const symbol = document.getElementById(`cardSymbol_${i}`)?.value || '♠';
-                if (url) {
-                    images.push({ index: i, url, symbol });
-                }
+        function renderAdminPanel(data) {
+            const stats = data.stats || {};
+            const global = stats.global || {};
+            const topPlayers = stats.topPlayers || [];
+            const allPrizes = stats.allPrizes || [];
+            const lucky = stats.luckyPrize || { name: '🍀 حظ أوفر', value: 100 };
+
+            let html = `
+                        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px;">
+                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <div style="font-size:1.6rem; font-weight:700; color:var(--primary);">${global.total_plays || 0}</div>
+                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الجولات</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <div style="font-size:1.6rem; font-weight:700; color:#00ff88;">${global.total_wins || 0}</div>
+                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الفوز</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <div style="font-size:1.6rem; font-weight:700; color:#ff4466;">${global.total_losses || 0}</div>
+                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الخسارة</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+                                <div style="font-size:1.6rem; font-weight:700; color:var(--accent);">${global.total_prizes || 0}</div>
+                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الجوائز</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:8px;">🏆 أفضل اللاعبين</div>
+                            ${topPlayers.length > 0 ? topPlayers.slice(0, 5).map((p, i) => `
+                                <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid rgba(255,255,255,0.02); font-size:0.6rem;">
+                                    <span style="color:cyan;">${i+1}. ${p.user_id}</span>
+                                    <span style="color:var(--accent);">${p.total_prize_value || 0} SYP</span>
+                                </div>
+                            `).join('') : '<div style="text-align:center; color:rgba(255,255,255,0.15); font-size:0.7rem;">لا توجد بيانات</div>'}
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:8px;">🎯 الجوائز (4 جوائز)</div>
+                            ${allPrizes.slice(0, 4).map(p => `
+                                <div style="display:flex; justify-content:space-between; padding:4px 12px; border-bottom:1px solid rgba(255,255,255,0.02); font-size:0.6rem;">
+                                    <span>${p.prize_icon || '🎁'} ${p.prize_name || 'جائزة'}</span>
+                                    <span style="color:var(--accent);">${p.prize_value || 0} SYP</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-bottom:18px; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:5px;">🍀 جائزة حظ أوفر</div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.65rem;">
+                                <span>${lucky.name || '🍀 حظ أوفر'}</span>
+                                <span style="color:var(--accent);">${lucky.value || 100} SYP</span>
+                            </div>
+                        </div>
+                        <button class="modal-btn" onclick="refreshAdminData()" style="width:100%; padding:12px; font-size:0.7rem; margin-top:0;">🔄 تحديث البيانات</button>
+                    `;
+            document.getElementById('adminContent').innerHTML = html;
+        }
+
+        function refreshAdminData() {
+            document.getElementById('adminContent').innerHTML =
+                '<div style="color:rgba(255,255,255,0.25); text-align:center; padding:25px;">⏳ جاري التحديث...</div>';
+            loadAdminData();
+        }
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open') && !adminDataLoaded) {
+                loadAdminData();
             }
-            
-            if (images.length === 0) {
-                alert('❌ يجب إدخال صور للبطاقات');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/card-images`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, images })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert('✅ تم حفظ صور البطاقات');
-                    loadCardImages();
-                } else {
-                    alert('❌ فشل الحفظ');
-                }
-            } catch (e) {
-                alert('❌ خطأ في الحفظ');
-            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').classList.remove('open');
         }
 
         // ============================================================
-        // لوحة الإدارة - الإعدادات
+        //  16. ملء الشاشة
         // ============================================================
-        
-        async function loadSettings() {
-            if (!isAdmin) return;
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/settings`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.success) {
-                    const group = document.getElementById('settingsGroup');
-                    group.innerHTML = '';
-                    
-                    const settingsMap = {
-                        'loading_image': { label: 'صورة التحميل', type: 'url', placeholder: 'رابط الصورة' },
-                        'card_back_image': { label: 'خلفية البطاقات', type: 'url', placeholder: 'رابط الصورة' },
-                        'deposit_required': { label: 'شرط الإيداع', type: 'checkbox' },
-                        'max_attempts': { label: 'عدد المحاولات', type: 'number', placeholder: '5' },
-                        'cards_count': { label: 'عدد البطاقات', type: 'number', placeholder: '12' },
-                        'game_title': { label: 'عنوان اللعبة', type: 'text', placeholder: '🎰 جاك بوت' },
-                        'cooldown_hours': { label: 'فترة الإنتظار (ساعات)', type: 'number', placeholder: '24' }
-                    };
-                    
-                    for (const [key, setting] of Object.entries(settingsMap)) {
-                        const value = data.settings[key] || {};
-                        const div = document.createElement('div');
-                        div.className = 'settings-item';
-                        
-                        let html = '';
-                        if (setting.type === 'checkbox') {
-                            const checked = value.enabled ? 'checked' : '';
-                            html = `<div class="checkbox-group"><input type="checkbox" id="setting_${key}" ${checked} data-key="${key}"><label for="setting_${key}">${setting.label}</label></div>`;
-                            if (key === 'deposit_required' && value.min_amount) {
-                                html += `<div style="margin-top:6px;"><label>الحد الأدنى:</label><input type="number" id="setting_min_deposit" value="${value.min_amount}" placeholder="1000" style="margin-top:4px;"></div>`;
-                            }
-                        } else {
-                            const val = value.url || value.text || value.value || '';
-                            html = `<label>${setting.label}</label><input type="${setting.type === 'url' ? 'url' : setting.type}" id="setting_${key}" value="${val}" placeholder="${setting.placeholder}" data-key="${key}">`;
-                        }
-                        div.innerHTML = html;
-                        group.appendChild(div);
-                    }
-                }
-            } catch (e) { console.error('❌ Settings error:', e); }
-        }
 
-        async function saveAllSettings() {
-            if (!isAdmin) return;
-            const settings = {};
-            document.querySelectorAll('#settingsGroup input[data-key]').forEach(input => {
-                const key = input.dataset.key;
-                if (!key) return;
-                if (input.type === 'checkbox') {
-                    const minInput = document.getElementById('setting_min_deposit');
-                    settings[key] = { enabled: input.checked, min_amount: minInput ? parseInt(minInput.value) || 1000 : 1000 };
-                } else if (input.type === 'url' || input.type === 'text') {
-                    settings[key] = { url: input.value || '' };
-                } else if (input.type === 'number') {
-                    settings[key] = { value: parseInt(input.value) || 0 };
-                }
-            });
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/settings/batch`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, settings })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert('✅ تم حفظ الإعدادات');
-                    if (settings.game_title?.url) document.getElementById('gameTitle').textContent = settings.game_title.url;
-                    if (settings.loading_image?.url) document.getElementById('loadingImage').src = settings.loading_image.url;
-                } else {
-                    alert('❌ فشل الحفظ');
-                }
-            } catch (e) {
-                alert('❌ خطأ في الحفظ');
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
             }
         }
 
         // ============================================================
-        // لوحة الإدارة - اللاعبين
+        //  17. تهيئة الصفحة وتشغيل كل شيء
         // ============================================================
-        
-        async function loadPlayers() {
-            if (!isAdmin) return;
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/admin/stats?userId=${userId}`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.success) {
-                    const tbody = document.querySelector('#playersTable tbody');
-                    tbody.innerHTML = '';
-                    (data.stats.topPlayers || []).forEach(p => {
-                        tbody.innerHTML += `<tr><td><code style="color:cyan;font-size:0.7rem;">${p.user_id}</code></td><td>${p.total_plays}</td><td style="color:#00ff88;">${p.total_wins}</td><td style="color:#ff4466;">${p.total_plays - p.total_wins}</td><td style="color:#ffd700;">${p.total_prize_value} SYP</td><td style="font-size:0.55rem;color:rgba(255,255,255,0.3);">${p.last_play || 'غير معروف'}</td></tr>`;
-                    });
-                }
-            } catch (e) { console.error('❌ Players error:', e); }
-        }
 
-        async function addDeposit() {
-            const targetUserId = document.getElementById('depositUserId').value.trim();
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            if (!targetUserId || !amount || amount <= 0) return alert('❌ بيانات غير صحيحة');
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/deposit`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, targetUserId, amount })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert(`✅ تم إضافة ${amount} SYP للمستخدم ${targetUserId}`);
-                    document.getElementById('depositUserId').value = '';
-                    document.getElementById('depositAmount').value = '';
-                } else {
-                    alert('❌ فشل الإضافة');
-                }
-            } catch (e) {
-                alert('❌ خطأ في الإضافة');
-            }
-        }
-
-        // ============================================================
-        // تبويبات الإدارة
-        // ============================================================
-        
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.admin-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
-                    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-                    if (tab.dataset.tab === 'dashboard') loadAdminStats();
-                    if (tab.dataset.tab === 'prizes') loadPrizes();
-                    if (tab.dataset.tab === 'cards') loadCardImages();
-                    if (tab.dataset.tab === 'players') loadPlayers();
-                });
-            });
+            // --- ربط الأزرار ---
+            document.getElementById('adminToggle').addEventListener('click', toggleAdminPanel);
+            document.getElementById('startGameBtn').addEventListener('click', startGame);
+
+            // --- تهيئة الصوت ---
+            initAudio();
+
+            // --- بدء التحميل والاتصال ---
+            showLoading();
+            connectSocket();
         });
 
-        // ============================================================
-        // تحديثات دورية
-        // ============================================================
-        
-        if (isAdmin) setInterval(() => { loadAdminStats(); loadPrizes(); loadPlayers(); }, 30000);
-        setInterval(() => { if (socket && !socket.connected) socket.connect(); }, 10000);
+        // --- تحديث دوري للبيانات (للمشرف) ---
+        setInterval(() => {
+            if (isAdmin && document.getElementById('adminPanel').classList.contains('open')) {
+                loadAdminData();
+            }
+        }, 35000);
 
-        // ============================================================
-        // تهيئة الصفحة
-        // ============================================================
-        
-        async function init() {
-            await showLoading();
-            try {
-                const response = await fetch(`${SERVER_URL}/api/settings`);
-                const data = await response.json();
-                if (data.success) {
-                    if (data.settings.loading_image?.url) document.getElementById('loadingImage').src = data.settings.loading_image.url;
-                    if (data.settings.game_title?.text) document.getElementById('gameTitle').textContent = data.settings.game_title.text;
-                }
-            } catch (e) {}
-            document.getElementById('startGameBtn').addEventListener('click', startGame);
-            connectSocket();
-        }
+        // --- إعادة اتصال تلقائي ---
+        setInterval(() => {
+            if (socket && !socket.connected) {
+                socket.connect();
+            }
+        }, 12000);
 
-        init();
-        console.log('🎰 جاك بوت - النسخة النهائية');
+        // --- تسجيل معلومات التشغيل ---
+        console.log('🎰 جاك بوت - النسخة النهائية (AAA)');
         console.log(`👤 المستخدم: ${userId} | 👑 مدير: ${isAdmin}`);
         console.log(`🔗 الخادم: ${SERVER_URL}`);
+        console.log('✅ جاهز للعمل!');
     </script>
+
 </body>
 </html>
