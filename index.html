@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 جاك بوت - لعبة الحظ</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        /* ============================================================
+           الأنماط الأساسية والخلفية المستقبلية
+           ============================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* خلفية مستقبلية متحركة */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(255, 0, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(0, 100, 255, 0.03) 0%, transparent 50%),
+                #0a0a0f;
+            overflow: hidden;
+        }
+
+        .cyber-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(45deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(255, 0, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        .cyber-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(0, 255, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 70% 60%, rgba(255, 0, 255, 0.08) 0%, transparent 60%);
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* جزيئات متطايرة */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: cyan;
+            border-radius: 50%;
+            box-shadow: 0 0 10px cyan, 0 0 20px rgba(0, 255, 255, 0.3);
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================================
+           الحاوية الرئيسية
+           ============================================================ */
+        
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ============================================================
+           شاشة التحميل
+           ============================================================ */
+        
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: #0a0a0f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #loadingScreen .loading-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.2);
+            animation: loadingPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes loadingPulse {
+            0% { transform: scale(1); box-shadow: 0 0 40px rgba(0, 255, 255, 0.1); }
+            100% { transform: scale(1.05); box-shadow: 0 0 80px rgba(0, 255, 255, 0.3); }
+        }
+
+        .loading-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-top: 30px;
+            background: linear-gradient(45deg, cyan, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3)); }
+            100% { filter: drop-shadow(0 0 40px rgba(255, 0, 255, 0.3)); }
+        }
+
+        .loading-bar-container {
+            width: 300px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, cyan, #ff00ff, cyan);
+            background-size: 200% 100%;
+            border-radius: 3px;
+            animation: barGlow 1.5s ease-in-out infinite alternate;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes barGlow {
+            0% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+            100% { background-position: 100% 50%; box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+           رأس الصفحة
+           ============================================================ */
+        
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, cyan, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-info .stat {
+            text-align: center;
+        }
+
+        .header-info .stat .value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: cyan;
+        }
+
+        .header-info .stat .label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .user-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            color: cyan;
+        }
+
+        .user-badge.admin {
+            background: rgba(255, 0, 255, 0.1);
+            border-color: rgba(255, 0, 255, 0.2);
+            color: #ff00ff;
+        }
+
+        /* ============================================================
+           لوحة الإدارة
+           ============================================================ */
+        
+        #adminPanel {
+            width: 100%;
+            display: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        #adminPanel.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff00ff;
+            margin-bottom: 20px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: cyan;
+        }
+
+        .admin-card .label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .admin-table th {
+            text-align: right;
+            padding: 10px 15px;
+            color: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+        }
+
+        .admin-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .admin-table tr:hover td {
+            background: rgba(0, 255, 255, 0.03);
+        }
+
+        .badge-win {
+            color: #00ff88;
+        }
+
+        .badge-lose {
+            color: #ff4466;
+        }
+
+        /* ============================================================
+           منطقة اللعبة
+           ============================================================ */
+        
+        #gameArea {
+            width: 100%;
+            max-width: 700px;
+            display: none;
+        }
+
+        #gameArea.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-header .prize-display {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .game-header .prize-display .highlight {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .attempts-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .attempt-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .attempt-dot.used {
+            background: rgba(255, 68, 102, 0.5);
+            border-color: #ff4466;
+        }
+
+        .attempt-dot.active {
+            background: rgba(0, 255, 255, 0.5);
+            border-color: cyan;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        /* ============================================================
+           شبكة البطاقات - 3D
+           ============================================================ */
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            perspective: 1200px;
+            padding: 10px;
+        }
+
+        .card-container {
+            aspect-ratio: 3/4;
+            cursor: pointer;
+            perspective: 800px;
+            position: relative;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 15px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            animation: matchPulse 0.6s ease;
+        }
+
+        @keyframes matchPulse {
+            0% { transform: rotateY(180deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.15) rotate(5deg); }
+            100% { transform: rotateY(180deg) scale(1); }
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* الوجه الخلفي - نار زرقاء هلامية */
+        .card-back {
+            background: linear-gradient(145deg, #0a1a2a, #061015);
+            transform: rotateY(0deg);
+            border-color: rgba(0, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 17px;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.3), transparent, rgba(0, 255, 255, 0.3), transparent);
+            z-index: -1;
+            animation: flameSpin 3s linear infinite;
+        }
+
+        @keyframes flameSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-back .fire-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 30% 40%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(0, 200, 255, 0.05) 0%, transparent 40%);
+            border-radius: 15px;
+            animation: fireDance 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes fireDance {
+            0% { opacity: 0.5; transform: scale(1) rotate(-2deg); }
+            100% { opacity: 1; transform: scale(1.05) rotate(2deg); }
+        }
+
+        .card-back .card-icon {
+            font-size: 2.5rem;
+            z-index: 2;
+            text-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* الوجه الأمامي */
+        .card-front {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, rgba(10, 30, 50, 0.95), rgba(5, 15, 30, 0.95));
+            border-color: rgba(255, 255, 255, 0.1);
+            font-size: 4rem;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .card-front .symbol {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-front .symbol-glow {
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.3;
+            animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .card:hover:not(.flipped) .card {
+            transform: rotateY(10deg) rotateX(5deg);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.1);
+        }
+
+        .card.flipped:hover {
+            transform: rotateY(180deg) scale(1.02);
+        }
+
+        /* ============================================================
+           نافذة النتيجة
+           ============================================================ */
+        
+        #resultModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: modalIn 0.5s ease;
+        }
+
+        #resultModal.show {
+            display: flex;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(10, 20, 40, 0.95), rgba(5, 10, 20, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 50px 60px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.05), transparent, rgba(255, 0, 255, 0.05), transparent);
+            animation: modalSpin 10s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes modalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-content > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .modal-title.win {
+            color: #ffd700;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-title.lose {
+            color: #ff4466;
+            text-shadow: 0 0 40px rgba(255, 68, 102, 0.3);
+        }
+
+        .modal-prize {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        .modal-prize-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .modal-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            background: linear-gradient(45deg, cyan, #00aaff);
+            color: #0a0a0f;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ============================================================
+           رسائل الخطأ
+           ============================================================ */
+        
+        .error-message {
+            background: rgba(255, 68, 102, 0.1);
+            border: 1px solid rgba(255, 68, 102, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: #ff4466;
+            margin-bottom: 20px;
+            display: none;
+            width: 100%;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        /* ============================================================
+           استجابة للشاشات الصغيرة
+           ============================================================ */
+        
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .header-info {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .cards-grid {
+                gap: 10px;
+            }
+
+            .card-front {
+                font-size: 2.5rem;
+            }
+
+            .card-back .card-icon {
+                font-size: 1.8rem;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+
+            .modal-title {
+                font-size: 1.8rem;
+            }
+
+            .admin-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .admin-table {
+                font-size: 0.7rem;
+            }
+
+            .admin-table th,
+            .admin-table td {
+                padding: 6px 10px;
+            }
+        }
+
+        /* ============================================================
+           الرسوم المتحركة للبطاقات عند الظهور
+           ============================================================ */
+        
+        .card-container {
+            opacity: 0;
+            animation: cardAppear 0.5s ease forwards;
+        }
+
+        .card-container:nth-child(1) { animation-delay: 0.05s; }
+        .card-container:nth-child(2) { animation-delay: 0.10s; }
+        .card-container:nth-child(3) { animation-delay: 0.15s; }
+        .card-container:nth-child(4) { animation-delay: 0.20s; }
+        .card-container:nth-child(5) { animation-delay: 0.25s; }
+        .card-container:nth-child(6) { animation-delay: 0.30s; }
+        .card-container:nth-child(7) { animation-delay: 0.35s; }
+        .card-container:nth-child(8) { animation-delay: 0.40s; }
+        .card-container:nth-child(9) { animation-delay: 0.45s; }
+        .card-container:nth-child(10) { animation-delay: 0.50s; }
+        .card-container:nth-child(11) { animation-delay: 0.55s; }
+        .card-container:nth-child(12) { animation-delay: 0.60s; }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px) rotateY(90deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateY(0deg);
+            }
+        }
+
+        /* ============================================================
+           مؤثرات نارية للفوز
+           ============================================================ */
+        
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 600;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(10vh) rotate(180deg) scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الخلفية المستقبلية -->
+    <div class="cyber-bg"></div>
+    
+    <!-- الجزيئات -->
+    <div class="particles" id="particles"></div>
+
+    <!-- شاشة التحميل -->
+    <div id="loadingScreen">
+        <img id="loadingImage" class="loading-image" src="https://i.imgur.com/placeholder.jpg" alt="Loading">
+        <div class="loading-title">🎰 جاك بوت</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div class="loading-text" id="loadingText">جاري الاتصال...</div>
+    </div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="container">
+        <!-- رأس الصفحة -->
+        <div class="header">
+            <div class="header-title">🎰 جاك بوت</div>
+            <div class="header-info">
+                <div class="stat">
+                    <div class="value" id="userBalance">0</div>
+                    <div class="label">رصيدك</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="userPlays">0</div>
+                    <div class="label">جولات</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="userWins">0</div>
+                    <div class="label">فوز</div>
+                </div>
+                <div id="userBadge" class="user-badge">👤 مستخدم</div>
+            </div>
+        </div>
+
+        <!-- رسالة الخطأ -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- لوحة الإدارة -->
+        <div id="adminPanel">
+            <div class="admin-title">⚙️ لوحة التحكم</div>
+            <div class="admin-grid" id="adminStats">
+                <div class="admin-card">
+                    <div class="number" id="adminTotalPlays">0</div>
+                    <div class="label">إجمالي الجولات</div>
+                </div>
+                <div class="admin-card">
+                    <div class="number" id="adminTotalWins">0</div>
+                    <div class="label">إجمالي الفوز</div>
+                </div>
+                <div class="admin-card">
+                    <div class="number" id="adminTotalLosses">0</div>
+                    <div class="label">إجمالي الخسارة</div>
+                </div>
+                <div class="admin-card">
+                    <div class="number" id="adminTotalPrizes">0</div>
+                    <div class="label">إجمالي الجوائز</div>
+                </div>
+                <div class="admin-card">
+                    <div class="number" id="adminUniquePlayers">0</div>
+                    <div class="label">اللاعبين الفريدين</div>
+                </div>
+            </div>
+            <h3 style="color: rgba(255,255,255,0.7); margin: 20px 0 10px;">🏆 أفضل اللاعبين</h3>
+            <table class="admin-table" id="topPlayersTable">
+                <thead>
+                    <tr>
+                        <th>اللاعب</th>
+                        <th>الجولات</th>
+                        <th>الفوز</th>
+                        <th>الجوائز</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <h3 style="color: rgba(255,255,255,0.7); margin: 20px 0 10px;">📋 آخر الجولات</h3>
+            <table class="admin-table" id="recentPlaysTable">
+                <thead>
+                    <tr>
+                        <th>اللاعب</th>
+                        <th>الجائزة</th>
+                        <th>القيمة</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- منطقة اللعبة -->
+        <div id="gameArea">
+            <div class="game-header">
+                <div class="prize-display">
+                    🎯 الجائزة الكبرى: <span class="highlight" id="grandPrize">🔥 10000 SYP</span>
+                </div>
+                <div class="attempts-display" id="attemptsDisplay"></div>
+            </div>
+            <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+
+        <!-- زر بدء اللعبة -->
+        <button class="modal-btn" id="startGameBtn" style="margin-top: 30px; display: none;">
+            🚀 ابدأ اللعبة
+        </button>
+    </div>
+
+    <!-- نافذة النتيجة -->
+    <div id="resultModal">
+        <div class="modal-content">
+            <div class="modal-title" id="resultTitle">🎉 فوز!</div>
+            <div class="modal-prize" id="resultPrize">🔥</div>
+            <div class="modal-prize-value" id="resultValue">+10000 SYP</div>
+            <div style="margin: 10px 0; color: rgba(255,255,255,0.5); font-size: 0.9rem;" id="resultDetail"></div>
+            <button class="modal-btn" onclick="closeResult()">🔄 العب مرة أخرى</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // جزيئات الخلفية
+        // ============================================================
+        
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 3 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 20) + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ============================================================
+        // متغيرات اللعبة
+        // ============================================================
+        
+        const ADMIN_ID = '7011476249';
+        let socket = null;
+        let userId = '';
+        let gameState = null;
+        let isGameActive = false;
+        let isAdmin = false;
+
+        // ============================================================
+        // الحصول على معرف المستخدم من الرابط
+        // ============================================================
+        
+        function getUserIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('user');
+            if (id) return id;
+            // محاولة الحصول من localStorage
+            const saved = localStorage.getItem('jackpot_user_id');
+            if (saved) return saved;
+            // استخدام معرف افتراضي للتجربة
+            return '123456789';
+        }
+
+        userId = getUserIdFromURL();
+        isAdmin = userId === ADMIN_ID;
+        localStorage.setItem('jackpot_user_id', userId);
+
+        // ============================================================
+        // شاشة التحميل
+        // ============================================================
+        
+        let loadingProgress = 0;
+
+        function updateLoading(progress, text) {
+            loadingProgress = Math.min(progress, 100);
+            document.getElementById('loadingBar').style.width = loadingProgress + '%';
+            if (text) document.getElementById('loadingText').textContent = text;
+        }
+
+        async function showLoading() {
+            const screen = document.getElementById('loadingScreen');
+            screen.classList.remove('hidden');
+            
+            // محاكاة التحميل
+            for (let i = 0; i <= 100; i += 2) {
+                updateLoading(i, `جاري التحميل... ${i}%`);
+                await new Promise(r => setTimeout(r, 30 + Math.random() * 20));
+            }
+        }
+
+        function hideLoading() {
+            const screen = document.getElementById('loadingScreen');
+            screen.classList.add('hidden');
+        }
+
+        // ============================================================
+        // الاتصال بالخادم
+        // ============================================================
+        
+        function connectSocket() {
+            updateLoading(60, '🔄 جاري الاتصال بالخادم...');
+            
+            socket = io(window.location.origin, {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: 10,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000
+            });
+
+            socket.on('connect', () => {
+                updateLoading(80, '✅ متصل بالخادم');
+                console.log('🟢 Connected to server');
+                authenticateUser();
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('❌ Connection error:', error);
+                updateLoading(70, '⚠️ خطأ في الاتصال، إعادة المحاولة...');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('🔴 Disconnected from server');
+                if (isGameActive) {
+                    showError('انقطع الاتصال بالخادم، جاري إعادة المحاولة...');
+                }
+            });
+
+            socket.on('reconnect', () => {
+                console.log('🔄 Reconnected');
+                updateLoading(90, '🔄 إعادة الاتصال...');
+                authenticateUser();
+            });
+
+            socket.on('error', (data) => {
+                console.error('❌ Server error:', data);
+                if (data.code === 'DEPOSIT_REQUIRED') {
+                    showError(data.message);
+                    document.getElementById('startGameBtn').style.display = 'none';
+                    updateLoading(100, '⛔ ' + data.message);
+                    setTimeout(hideLoading, 2000);
+                } else if (data.code === 'GAME_ACTIVE') {
+                    showError('لديك لعبة نشطة حالياً');
+                } else {
+                    showError(data.message || 'حدث خطأ في الخادم');
+                }
+            });
+
+            // مستمعي اللعبة
+            socket.on('game_started', handleGameStarted);
+            socket.on('card_revealed', handleCardRevealed);
+            socket.on('game_won', handleGameWon);
+            socket.on('game_lost', handleGameLost);
+            socket.on('win_notification', handleWinNotification);
+        }
+
+        // ============================================================
+        // مصادقة المستخدم
+        // ============================================================
+        
+        function authenticateUser() {
+            updateLoading(85, '🔐 جاري التحقق من هويتك...');
+            
+            socket.emit('join', { userId });
+            
+            // جلب بيانات المستخدم
+            fetch(`/api/user/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        updateLoading(95, '✅ مرحباً بك!');
+                        document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
+                        document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
+                        document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
+                        
+                        const badge = document.getElementById('userBadge');
+                        if (data.user.isAdmin) {
+                            badge.textContent = '👑 مدير';
+                            badge.classList.add('admin');
+                            isAdmin = true;
+                            document.getElementById('adminPanel').classList.add('show');
+                            loadAdminStats();
+                        } else {
+                            badge.textContent = '👤 مستخدم';
+                            badge.classList.remove('admin');
+                        }
+                        
+                        if (data.user.depositCheck?.allowed || data.user.isAdmin) {
+                            document.getElementById('startGameBtn').style.display = 'block';
+                        } else {
+                            showError(`⚠️ يجب أن يكون لديك إيداع بقيمة ${data.user.depositCheck?.required || 1000} SYP على الأقل`);
+                        }
+                        
+                        setTimeout(() => {
+                            updateLoading(100, '✅ جاهز!');
+                            setTimeout(hideLoading, 500);
+                        }, 500);
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Failed to fetch user:', err);
+                    updateLoading(90, '⚠️ خطأ في جلب البيانات');
+                });
+        }
+
+        // ============================================================
+        // دوال اللعبة
+        // ============================================================
+        
+        function startGame() {
+            if (isGameActive) return;
+            if (!socket || !socket.connected) {
+                showError('❌ غير متصل بالخادم');
+                return;
+            }
+            
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('gameArea').classList.remove('show');
+            document.getElementById('cardsGrid').innerHTML = '';
+            document.getElementById('attemptsDisplay').innerHTML = '';
+            
+            showError('⏳ جاري تجهيز اللعبة...', 'info');
+            
+            socket.emit('join', { userId });
+        }
+
+        function handleGameStarted(data) {
+            console.log('🎮 Game started:', data);
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('gameArea').classList.add('show');
+            
+            gameState = data;
+            isGameActive = true;
+            
+            // عرض الجائزة الكبرى
+            document.getElementById('grandPrize').textContent = `${data.prize.prize_icon} ${data.prize.prize_value} SYP`;
+            
+            // عرض عدد المحاولات
+            const attemptsDisplay = document.getElementById('attemptsDisplay');
+            attemptsDisplay.innerHTML = '';
+            for (let i = 0; i < data.maxAttempts; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'attempt-dot active';
+                dot.dataset.index = i;
+                attemptsDisplay.appendChild(dot);
+            }
+            
+            // إنشاء البطاقات
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+            
+            data.cards.forEach((card, index) => {
+                const container = document.createElement('div');
+                container.className = 'card-container';
+                container.dataset.index = index;
+                container.style.animationDelay = (index * 0.05) + 's';
+                
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.index = index;
+                
+                // الوجه الخلفي
+                const back = document.createElement('div');
+                back.className = 'card-face card-back';
+                back.innerHTML = `
+                    <div class="fire-effect"></div>
+                    <div class="card-icon">🎰</div>
+                `;
+                
+                // الوجه الأمامي
+                const front = document.createElement('div');
+                front.className = 'card-face card-front';
+                front.dataset.symbol = card.symbol;
+                front.innerHTML = `
+                    <div class="symbol">${card.symbol}</div>
+                    <div class="symbol-glow" style="background: ${getSymbolColor(card.symbol)}"></div>
+                `;
+                
+                cardEl.appendChild(back);
+                cardEl.appendChild(front);
+                container.appendChild(cardEl);
+                
+                container.addEventListener('click', () => revealCard(index));
+                
+                grid.appendChild(container);
+            });
+            
+            document.getElementById('startGameBtn').style.display = 'none';
+        }
+
+        function getSymbolColor(symbol) {
+            const colors = {
+                '🔥': '#ff4444',
+                '💎': '#00ccff',
+                '⭐': '#ffd700',
+                '🎯': '#ff6600',
+                '🎁': '#ff00ff',
+                '🍀': '#00ff88'
+            };
+            return colors[symbol] || '#ffffff';
+        }
+
+        function revealCard(index) {
+            if (!isGameActive || !gameState) return;
+            if (gameState.cards[index].isRevealed || gameState.cards[index].isMatched) return;
+            
+            socket.emit('reveal_card', { cardId: index });
+        }
+
+        function handleCardRevealed(data) {
+            const cardEl = document.querySelector(`.card-container[data-index="${data.cardId}"] .card`);
+            if (cardEl) {
+                cardEl.classList.add('flipped');
+            }
+            
+            // تحديث المحاولات
+            const dots = document.querySelectorAll('.attempt-dot');
+            dots.forEach((dot, i) => {
+                if (i < data.attempts) {
+                    dot.className = 'attempt-dot used';
+                } else {
+                    dot.className = 'attempt-dot active';
+                }
+            });
+        }
+
+        function handleGameWon(data) {
+            isGameActive = false;
+            document.getElementById('startGameBtn').style.display = 'block';
+            document.getElementById('startGameBtn').textContent = '🔄 العب مرة أخرى';
+            
+            // تمييز البطاقات المتطابقة
+            data.matchedCards.forEach(id => {
+                const container = document.querySelector(`.card-container[data-index="${id}"]`);
+                if (container) {
+                    const card = container.querySelector('.card');
+                    card.classList.add('matched');
+                }
+            });
+            
+            // عرض نافذة الفوز
+            showResult(true, data.prize);
+            playWinEffect();
+        }
+
+        function handleGameLost(data) {
+            isGameActive = false;
+            document.getElementById('startGameBtn').style.display = 'block';
+            document.getElementById('startGameBtn').textContent = '🔄 العب مرة أخرى';
+            
+            // كشف جميع البطاقات
+            data.allCards.forEach(c => {
+                const container = document.querySelector(`.card-container[data-index="${c.id}"]`);
+                if (container) {
+                    const card = container.querySelector('.card');
+                    const front = card.querySelector('.card-front');
+                    if (front) {
+                        front.querySelector('.symbol').textContent = c.symbol;
+                    }
+                    card.classList.add('flipped');
+                }
+            });
+            
+            // عرض نافذة الخسارة
+            showResult(false, null, data.message);
+        }
+
+        function handleWinNotification(data) {
+            console.log('🏆 Win notification:', data);
+            // يمكن إضافة إشعار للمستخدمين الآخرين
+        }
+
+        // ============================================================
+        // عرض النتيجة
+        // ============================================================
+        
+        function showResult(isWin, prize, message) {
+            const modal = document.getElementById('resultModal');
+            const title = document.getElementById('resultTitle');
+            const prizeEl = document.getElementById('resultPrize');
+            const valueEl = document.getElementById('resultValue');
+            const detailEl = document.getElementById('resultDetail');
+            
+            if (isWin && prize) {
+                title.className = 'modal-title win';
+                title.textContent = '🎉 فوز! تهانينا!';
+                prizeEl.textContent = prize.prize_icon;
+                valueEl.textContent = `+${prize.prize_value} SYP`;
+                detailEl.textContent = `🎁 ${prize.prize_name}`;
+            } else {
+                title.className = 'modal-title lose';
+                title.textContent = '😅 حظ أوفر!';
+                prizeEl.textContent = '🍀';
+                valueEl.textContent = '0 SYP';
+                detailEl.textContent = message || 'في المرة القادمة إن شاء الله';
+            }
+            
+            modal.classList.add('show');
+            
+            // تحديث الإحصائيات
+            fetch(`/api/user/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
+                        document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
+                        document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
+                    }
+                });
+            
+            if (isAdmin) loadAdminStats();
+        }
+
+        function closeResult() {
+            document.getElementById('resultModal').classList.remove('show');
+        }
+
+        // ============================================================
+        // مؤثرات الفوز
+        // ============================================================
+        
+        function playWinEffect() {
+            // مؤثرات نارية
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            
+            const colors = ['#ff4444', '#ffd700', '#00ff88', '#00ccff', '#ff00ff', '#ff6600'];
+            const shapes = ['■', '●', '▲', '★', '◆'];
+            
+            for (let i = 0; i < 80; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                el.style.left = Math.random() * 100 + '%';
+                el.style.color = colors[Math.floor(Math.random() * colors.length)];
+                el.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                el.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                el.style.animationDelay = (Math.random() * 1) + 's';
+                container.appendChild(el);
+            }
+            
+            setTimeout(() => {
+                container.remove();
+            }, 5000);
+        }
+
+        // ============================================================
+        // لوحة الإدارة
+        // ============================================================
+        
+        async function loadAdminStats() {
+            if (!isAdmin) return;
+            
+            try {
+                const res = await fetch(`/api/admin/stats?userId=${userId}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('adminTotalPlays').textContent = data.stats.global.total_plays || 0;
+                    document.getElementById('adminTotalWins').textContent = data.stats.global.total_wins || 0;
+                    document.getElementById('adminTotalLosses').textContent = data.stats.global.total_losses || 0;
+                    document.getElementById('adminTotalPrizes').textContent = data.stats.global.total_prizes || 0;
+                    document.getElementById('adminUniquePlayers').textContent = data.stats.global.unique_players || 0;
+                    
+                    // أفضل اللاعبين
+                    const topBody = document.querySelector('#topPlayersTable tbody');
+                    topBody.innerHTML = '';
+                    data.stats.topPlayers.forEach(p => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><code style="font-size:0.8rem; color:cyan;">${p.user_id}</code></td>
+                            <td>${p.total_plays}</td>
+                            <td>${p.total_wins}</td>
+                            <td style="color:#ffd700;">${p.total_prize_value} SYP</td>
+                        `;
+                        topBody.appendChild(row);
+                    });
+                    
+                    // آخر الجولات
+                    const recentBody = document.querySelector('#recentPlaysTable tbody');
+                    recentBody.innerHTML = '';
+                    data.stats.recentPlays.forEach(p => {
+                        const row = document.createElement('tr');
+                        const status = p.is_winner ? 
+                            '<span class="badge-win">✅ فوز</span>' : 
+                            '<span class="badge-lose">❌ خسارة</span>';
+                        row.innerHTML = `
+                            <td><code style="font-size:0.7rem; color:cyan;">${p.user_id}</code></td>
+                            <td>${p.prize_name || 'لا جائزة'}</td>
+                            <td>${p.prize_value || 0} SYP</td>
+                            <td>${status}</td>
+                            <td style="font-size:0.7rem; color:rgba(255,255,255,0.5);">${p.formatted_date || p.play_date}</td>
+                        `;
+                        recentBody.appendChild(row);
+                    });
+                }
+            } catch (err) {
+                console.error('❌ Failed to load admin stats:', err);
+            }
+        }
+
+        // تحديث إحصائيات الإدارة كل 30 ثانية
+        if (isAdmin) {
+            setInterval(loadAdminStats, 30000);
+        }
+
+        // ============================================================
+        // دوال مساعدة
+        // ============================================================
+        
+        function showError(message, type = 'error') {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.className = 'error-message show';
+            if (type === 'info') {
+                el.style.borderColor = 'rgba(0, 255, 255, 0.3)';
+                el.style.color = 'cyan';
+            } else {
+                el.style.borderColor = 'rgba(255, 68, 102, 0.3)';
+                el.style.color = '#ff4466';
+            }
+            setTimeout(() => {
+                el.classList.remove('show');
+            }, 8000);
+        }
+
+        // ============================================================
+        // تهيئة الصفحة
+        // ============================================================
+        
+        async function init() {
+            await showLoading();
+            
+            // تحميل إعدادات اللعبة
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data.success && data.settings) {
+                    // تحديث صورة التحميل
+                    if (data.settings.loadingImage?.url) {
+                        document.getElementById('loadingImage').src = data.settings.loadingImage.url;
+                    }
+                }
+            } catch (err) {
+                console.error('❌ Failed to load settings:', err);
+            }
+            
+            // زر بدء اللعبة
+            document.getElementById('startGameBtn').addEventListener('click', startGame);
+            
+            // الاتصال بالخادم
+            connectSocket();
+        }
+
+        // بدء التشغيل
+        init();
+
+        console.log('🎰 Jackpot Game loaded');
+        console.log(`👤 User ID: ${userId}`);
+        console.log(`👑 Admin: ${isAdmin}`);
+    </script>
+</body>
+</html>
