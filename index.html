@@ -8,7 +8,7 @@
     </script>
     <style>
         /* ============================================================
-           التصميم الأساسي - جاك بوت
+           تصميم ثابت ومتين
            ============================================================ */
         * {
             margin: 0;
@@ -24,9 +24,7 @@
             --gold-light: #FFE44D;
             --white: #FFFFFF;
             --black: #0A0A0A;
-            --dark-gray: #1A1A1A;
             --red: #DC143C;
-            --shadow-gold: 0 0 40px rgba(255, 215, 0, 0.15);
         }
 
         html,
@@ -39,10 +37,9 @@
             color: var(--white);
             -webkit-font-smoothing: antialiased;
             user-select: none;
-            touch-action: manipulation;
         }
 
-        /* --- الخلفية --- */
+        /* خلفية */
         #gameBackground {
             position: fixed;
             top: 0;
@@ -118,7 +115,7 @@
             }
         }
 
-        /* --- شاشة التحميل --- */
+        /* شاشة التحميل */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -178,7 +175,6 @@
             font-size: 1.2rem;
             color: var(--gold);
             margin-top: 15px;
-            font-variant-numeric: tabular-nums;
         }
 
         .loading-text {
@@ -227,7 +223,7 @@
             }
         }
 
-        /* --- الهيدر --- */
+        /* الهيدر */
         .header {
             position: fixed;
             top: 0;
@@ -312,7 +308,7 @@
             background: rgba(220, 20, 60, 0.12);
         }
 
-        /* --- مؤقت الإنتظار --- */
+        /* مؤقت الإنتظار */
         .cooldown-overlay {
             position: fixed;
             top: 0;
@@ -381,7 +377,7 @@
             letter-spacing: 3px;
         }
 
-        /* --- منطقة اللعبة --- */
+        /* منطقة اللعبة */
         #gameArea {
             position: fixed;
             top: 60px;
@@ -480,7 +476,7 @@
         }
 
         /* ============================================================
-           البطاقات - تصميم متين خطوة بخطوة
+           البطاقات - تصميم متين
            ============================================================ */
         .cards-grid {
             display: grid;
@@ -504,15 +500,13 @@
             transform: rotateY(15deg) rotateX(8deg) scale(1.03);
         }
 
-        /* ============================================================
-           البطاقة - الهيكل الأساسي
-           ============================================================ */
+        /* ✅ البطاقة - هيكل ثابت */
         .card {
             width: 100%;
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 12px;
         }
 
@@ -521,9 +515,7 @@
             transform: rotateY(180deg);
         }
 
-        /* ============================================================
-           وجوه البطاقة - نفس المستوى
-           ============================================================ */
+        /* ✅ وجوه البطاقة */
         .card-face {
             position: absolute;
             width: 100%;
@@ -539,9 +531,7 @@
             border: 2px solid rgba(255, 215, 0, 0.05);
         }
 
-        /* ============================================================
-           الوجه الخلفي - يظهر قبل القلب
-           ============================================================ */
+        /* ✅ الوجه الخلفي */
         .card-back {
             transform: rotateY(0deg);
             background: linear-gradient(145deg, #1a0a0a, #0a0a0a);
@@ -556,7 +546,6 @@
             border-radius: 10px;
         }
 
-        /* تأثير النار الزرقاء */
         .card-back::before {
             content: '';
             position: absolute;
@@ -608,9 +597,7 @@
             }
         }
 
-        /* ============================================================
-           الوجه الأمامي - يظهر بعد القلب ✅
-           ============================================================ */
+        /* ✅ الوجه الأمامي - يظهر الرمز */
         .card-front {
             transform: rotateY(180deg);
             background: linear-gradient(145deg, rgba(20, 10, 10, 0.95), rgba(5, 5, 5, 0.95));
@@ -632,15 +619,12 @@
             text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
         }
 
-        /* حالة معطلة */
         .card-container.disabled {
             cursor: not-allowed;
             opacity: 0.4;
         }
 
-        /* ============================================================
-           تأثيرات الحركة
-           ============================================================ */
+        /* تأثيرات الحركة */
         .card-container.falling {
             animation: cardFall 0.6s ease forwards;
         }
@@ -657,48 +641,42 @@
         }
 
         .card-container.selected {
-            animation: cardSelected 0.5s ease forwards;
+            animation: cardSelected 0.4s ease forwards;
         }
 
         @keyframes cardSelected {
             0% {
                 transform: translateY(0) scale(1);
-                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
             }
             50% {
-                transform: translateY(-15px) scale(1.08);
-                box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+                transform: translateY(-12px) scale(1.06);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
             }
             100% {
-                transform: translateY(-8px) scale(1.04);
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+                transform: translateY(-5px) scale(1.03);
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
             }
         }
 
         .card-container.winner {
-            animation: cardWinner 1s ease forwards;
+            animation: cardWinner 0.8s ease forwards;
         }
 
         @keyframes cardWinner {
             0% {
-                transform: translateY(-8px) scale(1.04);
-                box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+                transform: translateY(-5px) scale(1.03);
             }
             30% {
-                transform: translateY(-20px) scale(1.15);
-                box-shadow: 0 0 80px rgba(255, 215, 0, 0.4);
-            }
-            60% {
-                transform: translateY(-10px) scale(1.08);
+                transform: translateY(-18px) scale(1.12);
                 box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
             }
             100% {
-                transform: translateY(-12px) scale(1.1);
-                box-shadow: 0 0 60px rgba(255, 215, 0, 0.25);
+                transform: translateY(-10px) scale(1.08);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
             }
         }
 
-        /* --- تأثير الفوز --- */
+        /* تأثير الفوز */
         .win-overlay {
             position: fixed;
             top: 0;
@@ -726,7 +704,7 @@
             }
         }
 
-        /* --- نافذة النتيجة --- */
+        /* نافذة النتيجة */
         #resultModal {
             position: fixed;
             top: 0;
@@ -869,7 +847,7 @@
             box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
         }
 
-        /* --- زر البدء --- */
+        /* زر البدء */
         .btn-start {
             position: fixed;
             bottom: 25px;
@@ -916,12 +894,7 @@
             box-shadow: none;
         }
 
-        .btn-start.disabled:hover {
-            transform: translateX(-50%) scale(0.95);
-            box-shadow: none;
-        }
-
-        /* --- رسائل الخطأ --- */
+        /* رسائل الخطأ */
         .error-toast {
             position: fixed;
             bottom: 80px;
@@ -961,7 +934,7 @@
             }
         }
 
-        /* --- نثار الفوز --- */
+        /* نثار الفوز */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -999,7 +972,7 @@
             }
         }
 
-        /* --- لوحة الإدارة --- */
+        /* لوحة الإدارة */
         #adminPanel {
             position: fixed;
             top: 55px;
@@ -1797,6 +1770,9 @@
             isProcessingCard = false;
         }
 
+        // ============================================================
+        // ✅ معالج بدء اللعبة - يعرض البطاقات مع الرموز
+        // ============================================================
         function handleGameStarted(data) {
             if (!data) return;
             hideToast();
@@ -1840,7 +1816,7 @@
                             <div class="fire-effect"></div>
                         `;
 
-                // ✅ الوجه الأمامي - يظهر الرمز
+                // ✅ الوجه الأمامي - نضع الرمز مباشرة
                 const front = document.createElement('div');
                 front.className = 'card-face card-front';
                 const img = cardImages.find(c => c.symbol === card.symbol);
@@ -1853,7 +1829,12 @@
                 cardEl.appendChild(back);
                 cardEl.appendChild(front);
                 container.appendChild(cardEl);
-                container.addEventListener('click', () => revealCard(index));
+
+                // ✅ إضافة حدث النقر
+                container.addEventListener('click', () => {
+                    revealCard(index);
+                });
+
                 grid.appendChild(container);
             });
 
@@ -1864,31 +1845,34 @@
         // ✅ كشف البطاقة - مع منع الضغط المتكرر
         // ============================================================
         function revealCard(index) {
-            // ✅ منع الضغط المتكرر
             if (isProcessingCard) return;
             if (!isGameActive || !gameState) return;
 
             const card = gameState.cards?.[index];
             if (!card || card.isRevealed || card.isMatched) return;
 
-            // ✅ قفل المعالجة
             isProcessingCard = true;
 
             playSound('flip');
             socket.emit('reveal_card', { cardId: index });
 
-            // ✅ فتح القفل بعد 1 ثانية (الحد الأدنى للاستجابة)
+            // ✅ فتح القفل بعد 0.8 ثانية
             setTimeout(() => {
                 isProcessingCard = false;
-            }, 1000);
+            }, 800);
         }
 
+        // ============================================================
+        // ✅ معالج كشف البطاقة
+        // ============================================================
         function handleCardRevealed(data) {
             if (!data) return;
             const container = document.querySelector(`.card-container[data-index="${data.cardId}"]`);
             if (!container) return;
 
             const card = container.querySelector('.card');
+
+            // ✅ إضافة تأثير الاختيار
             container.classList.add('selected');
             playSound('select');
 
@@ -1910,7 +1894,7 @@
                 dot.className = i < attempts ? 'attempt-dot used' : 'attempt-dot active';
             });
 
-            // ✅ فتح القفل بعد معالجة البطاقة
+            // ✅ فتح القفل بعد المعالجة
             setTimeout(() => {
                 isProcessingCard = false;
             }, 300);
@@ -1927,7 +1911,7 @@
             const matchedIds = (data.matchedCards || []).map(c => c.id);
             const allContainers = document.querySelectorAll('.card-container');
 
-            // 1️⃣ سقوط البطاقات غير الرابحة
+            // ✅ سقوط البطاقات غير الرابحة
             allContainers.forEach((container, index) => {
                 if (!matchedIds.includes(index)) {
                     setTimeout(() => {
@@ -1937,7 +1921,7 @@
                 }
             });
 
-            // 2️⃣ ترتيب البطاقات الرابحة
+            // ✅ ترتيب البطاقات الرابحة
             setTimeout(() => {
                 const matchedContainers = [];
                 allContainers.forEach((container, index) => {
@@ -1957,7 +1941,7 @@
                     }, i * 200);
                 });
 
-                // 3️⃣ عرض النتيجة
+                // ✅ عرض النتيجة
                 setTimeout(() => {
                     const overlay = document.getElementById('winOverlay');
                     overlay.classList.add('show');
@@ -1993,7 +1977,7 @@
 
             const allCards = data.allCards || [];
 
-            // 1️⃣ كشف جميع البطاقات
+            // ✅ كشف جميع البطاقات
             allCards.forEach((c, index) => {
                 const container = document.querySelector(`.card-container[data-index="${c.id}"]`);
                 if (container) {
@@ -2012,7 +1996,7 @@
                 }
             });
 
-            // 2️⃣ سقوط جميع البطاقات
+            // ✅ سقوط جميع البطاقات
             setTimeout(() => {
                 document.querySelectorAll('.card-container').forEach((container, index) => {
                     setTimeout(() => {
@@ -2022,9 +2006,9 @@
                 });
             }, allCards.length * 120 + 300);
 
-            // 3️⃣ عرض النتيجة
+            // ✅ عرض النتيجة
             setTimeout(() => {
-                showResult(false, null, '😅 لم يتطابق 3 رموز، حظ أوفر في المرة القادمة!');
+                showResult(false, null, '😅 لم يتطابق 3 رموز');
                 updateUserStats();
 
                 document.getElementById('startGameBtn').style.display = 'block';

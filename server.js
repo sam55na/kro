@@ -1,6 +1,5 @@
 // ============================================================
-// الخادم النهائي الكامل - جاك بوت
-// جميع الإصلاحات: نظام 24 ساعة يعمل بشكل صحيح، جوائز 4، حظ أوفر
+// الخادم النهائي - جاك بوت
 // ============================================================
 
 const express = require('express');
@@ -58,7 +57,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static('public'));
 
-// حماية من الهجمات
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 300,
@@ -106,7 +104,6 @@ async function initDatabase(retries = 10, delay = 3000) {
 // ============================================================
 async function createTables() {
     try {
-        // جدول إعدادات اللعبة
         await pool.query(`
             CREATE TABLE IF NOT EXISTS game_settings (
                 id SERIAL PRIMARY KEY,
@@ -116,7 +113,6 @@ async function createTables() {
             )
         `);
 
-        // جدول الجوائز (4 جوائز فقط)
         await pool.query(`
             CREATE TABLE IF NOT EXISTS game_prizes (
                 id SERIAL PRIMARY KEY,
@@ -131,7 +127,6 @@ async function createTables() {
             )
         `);
 
-        // جدول صور البطاقات (4 صور)
         await pool.query(`
             CREATE TABLE IF NOT EXISTS card_images (
                 id SERIAL PRIMARY KEY,
@@ -142,7 +137,6 @@ async function createTables() {
             )
         `);
 
-        // جدول سجل اللعب
         await pool.query(`
             CREATE TABLE IF NOT EXISTS game_plays (
                 id SERIAL PRIMARY KEY,
@@ -159,7 +153,6 @@ async function createTables() {
             )
         `);
 
-        // جدول إحصائيات المستخدمين
         await pool.query(`
             CREATE TABLE IF NOT EXISTS user_game_stats (
                 user_id VARCHAR(50) PRIMARY KEY,
@@ -171,7 +164,6 @@ async function createTables() {
             )
         `);
 
-        // جدول الإيداعات
         await pool.query(`
             CREATE TABLE IF NOT EXISTS game_deposits (
                 id SERIAL PRIMARY KEY,
@@ -182,23 +174,11 @@ async function createTables() {
             )
         `);
 
-        // جدول وقت آخر لعب
         await pool.query(`
             CREATE TABLE IF NOT EXISTS user_last_play (
                 user_id VARCHAR(50) PRIMARY KEY,
                 last_play_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 plays_today INTEGER DEFAULT 0
-            )
-        `);
-
-        // جدول سجل التغييرات
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS admin_logs (
-                id SERIAL PRIMARY KEY,
-                admin_id VARCHAR(50) NOT NULL,
-                action VARCHAR(100) NOT NULL,
-                details JSONB,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
 
@@ -245,7 +225,6 @@ async function insertDefaultData() {
             console.log('✅ Default card images inserted');
         }
 
-        // الإعدادات الافتراضية
         const defaultSettings = [
             ['loading_image', JSON.stringify({ url: 'https://i.imgur.com/loading_bg.jpg' })],
             ['background_image', JSON.stringify({ url: 'https://i.imgur.com/game_bg.jpg' })],
@@ -279,25 +258,17 @@ initDatabase();
 // ============================================================
 // Keep-Alive
 // ============================================================
-setInterval(() => {
-    console.log('💓 Keep-alive ping at:', new Date().toISOString());
-}, 5 * 60 * 1000);
+setInterval(() => console.log('💓 Keep-alive ping'), 5 * 60 * 1000);
 
 app.get('/ping', (req, res) => {
-    res.status(200).json({
-        status: 'alive',
-        time: new Date().toISOString(),
-        uptime: process.uptime(),
-        db: dbConnected
-    });
+    res.json({ status: 'alive', time: new Date().toISOString(), db: dbConnected });
 });
 
 app.get('/health', (req, res) => {
-    res.status(200).json({
+    res.json({
         status: 'healthy',
         connections: io.engine?.clientsCount || 0,
-        db: dbConnected,
-        timestamp: new Date().toISOString()
+        db: dbConnected
     });
 });
 
@@ -305,9 +276,7 @@ app.get('/health', (req, res) => {
 // دوال قاعدة البيانات
 // ============================================================
 async function query(text, params) {
-    if (!dbConnected) {
-        throw new Error('Database not connected');
-    }
+    if (!dbConnected) throw new Error('Database not connected');
     try {
         const result = await pool.query(text, params);
         return result;
@@ -338,28 +307,13 @@ async function setSetting(key, value) {
 async function getAllSettings() {
     const result = await query('SELECT setting_key, setting_value FROM game_settings');
     const settings = {};
-    result.rows.forEach(row => {
-        try {
-            settings[row.setting_key] = row.setting_value;
-        } catch (e) {
-            settings[row.setting_key] = null;
-        }
-    });
+    result.rows.forEach(row => { settings[row.setting_key] = row.setting_value; });
     return settings;
 }
 
 async function getCardImages() {
     const result = await query('SELECT * FROM card_images ORDER BY card_index');
     return result.rows;
-}
-
-async function updateCardImage(index, imageUrl, symbol) {
-    await query(
-        `INSERT INTO card_images (card_index, image_url, symbol) 
-         VALUES ($1, $2, $3) 
-         ON CONFLICT (card_index) DO UPDATE SET image_url = $2, symbol = $3, updated_at = CURRENT_TIMESTAMP`,
-        [index, imageUrl, symbol]
-    );
 }
 
 // ============================================================
@@ -395,27 +349,22 @@ function selectPrize() {
 }
 
 // ============================================================
-// ✅ دالة التحقق من فترة الإنتظار - المدير مستثنى تماماً
+// ✅ التحقق من فترة الإنتظار - المدير مستثنى
 // ============================================================
 async function checkCooldown(userId) {
-    // 🚫 المدير لا يخضع لفترة الإنتظار
     if (userId === ADMIN_ID) {
-        console.log(`👑 Admin ${userId} exempt from cooldown`);
         return { allowed: true, remaining: 0 };
     }
 
     const cooldownSetting = await getSetting('cooldown_hours');
     const cooldownHours = cooldownSetting?.value || 24;
 
-    // ✅ التحقق من وجود المستخدم في جدول آخر لعب
     const result = await query(
         `SELECT last_play_time FROM user_last_play WHERE user_id = $1`,
         [userId]
     );
 
-    // ✅ إذا لم يسبق له اللعب، نسمح له فوراً
     if (!result.rows[0]) {
-        console.log(`🆕 New user ${userId}, no cooldown`);
         return { allowed: true, remaining: 0 };
     }
 
@@ -423,23 +372,19 @@ async function checkCooldown(userId) {
     const now = new Date();
     const hoursDiff = (now - lastPlay) / (1000 * 60 * 60);
 
-    // ✅ إذا مرت 24 ساعة، نسمح له ونحدث الوقت
     if (hoursDiff >= cooldownHours) {
         await query(
             `UPDATE user_last_play SET last_play_time = CURRENT_TIMESTAMP, plays_today = 0 WHERE user_id = $1`,
             [userId]
         );
-        console.log(`⏰ Cooldown passed for ${userId}, allowed to play`);
         return { allowed: true, remaining: 0 };
     }
 
     const remaining = cooldownHours - hoursDiff;
-    console.log(`⏳ Cooldown for ${userId}: ${remaining.toFixed(2)} hours remaining`);
     return { allowed: false, remaining: remaining };
 }
 
 async function recordPlay(userId, prize, cardsRevealed, matchedSymbol, isWinner) {
-    // تسجيل اللعب
     const result = await query(
         `INSERT INTO game_plays (user_id, prize_id, prize_name, prize_value, is_winner, cards_revealed, matched_symbol, game_data)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
@@ -447,7 +392,6 @@ async function recordPlay(userId, prize, cardsRevealed, matchedSymbol, isWinner)
             isWinner, cardsRevealed, matchedSymbol || null, JSON.stringify({ cardsRevealed, matchedSymbol })]
     );
 
-    // تحديث إحصائيات المستخدم
     await query(
         `INSERT INTO user_game_stats (user_id, total_plays, total_wins, total_losses, total_prize_value, last_play)
          VALUES ($1, 1, $2, $3, $4, CURRENT_TIMESTAMP)
@@ -460,7 +404,6 @@ async function recordPlay(userId, prize, cardsRevealed, matchedSymbol, isWinner)
         [userId, isWinner ? 1 : 0, isWinner ? 0 : 1, isWinner ? (prize?.prize_value || 0) : 100]
     );
 
-    // ✅ تحديث وقت آخر لعب للمستخدمين العاديين فقط
     if (userId !== ADMIN_ID) {
         await query(
             `INSERT INTO user_last_play (user_id, last_play_time, plays_today) 
@@ -479,64 +422,44 @@ async function recordPlay(userId, prize, cardsRevealed, matchedSymbol, isWinner)
 // API Routes
 // ============================================================
 
-// ----- الحصول على جميع الإعدادات -----
 app.get('/api/settings', async (req, res) => {
     try {
         const settings = await getAllSettings();
         const cardImages = await getCardImages();
         const prizes = await loadPrizes();
         const luckyPrize = await getSetting('lucky_prize');
-
-        res.json({
-            success: true,
-            settings,
-            cardImages,
-            prizes,
-            luckyPrize
-        });
+        res.json({ success: true, settings, cardImages, prizes, luckyPrize });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// ----- تحديث إعدادات متعددة -----
 app.post('/api/admin/settings/batch', async (req, res) => {
     try {
         const { userId, settings } = req.body;
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
         for (const [key, value] of Object.entries(settings)) {
             await setSetting(key, value);
         }
-
-        console.log(`📝 Settings updated by admin ${userId}`);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// ----- إدارة الجوائز -----
 app.post('/api/admin/prizes', async (req, res) => {
     try {
         const { userId, prize } = req.body;
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
         if (prize.id) {
             await query(
-                `UPDATE game_prizes SET 
-                    prize_name = $1, 
-                    prize_value = $2, 
-                    prize_icon = $3, 
-                    prize_symbol = $4, 
-                    weight = $5, 
-                    is_active = $6,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = $7`,
+                `UPDATE game_prizes SET prize_name = $1, prize_value = $2, prize_icon = $3, 
+                 prize_symbol = $4, weight = $5, is_active = $6, updated_at = CURRENT_TIMESTAMP
+                 WHERE id = $7`,
                 [prize.prize_name, prize.prize_value, prize.prize_icon,
                     prize.prize_symbol, prize.weight, prize.is_active, prize.id
                 ]
@@ -550,7 +473,6 @@ app.post('/api/admin/prizes', async (req, res) => {
                 ]
             );
         }
-
         await loadPrizes();
         res.json({ success: true });
     } catch (error) {
@@ -564,7 +486,6 @@ app.delete('/api/admin/prizes/:id', async (req, res) => {
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
         await query('DELETE FROM game_prizes WHERE id = $1', [req.params.id]);
         await loadPrizes();
         res.json({ success: true });
@@ -573,14 +494,12 @@ app.delete('/api/admin/prizes/:id', async (req, res) => {
     }
 });
 
-// ----- تحديث جائزة حظ أوفر -----
 app.post('/api/admin/lucky-prize', async (req, res) => {
     try {
         const { userId, luckyPrize } = req.body;
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
         await setSetting('lucky_prize', luckyPrize);
         res.json({ success: true });
     } catch (error) {
@@ -588,18 +507,20 @@ app.post('/api/admin/lucky-prize', async (req, res) => {
     }
 });
 
-// ----- تحديث صور البطاقات -----
 app.post('/api/admin/card-images', async (req, res) => {
     try {
         const { userId, images } = req.body;
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
         for (const img of images) {
-            await updateCardImage(img.index, img.url, img.symbol);
+            await query(
+                `INSERT INTO card_images (card_index, image_url, symbol) 
+                 VALUES ($1, $2, $3) 
+                 ON CONFLICT (card_index) DO UPDATE SET image_url = $2, symbol = $3, updated_at = CURRENT_TIMESTAMP`,
+                [img.index, img.url, img.symbol]
+            );
         }
-
         await loadCardImages();
         res.json({ success: true });
     } catch (error) {
@@ -608,19 +529,15 @@ app.post('/api/admin/card-images', async (req, res) => {
 });
 
 // ============================================================
-// ✅ API بيانات المستخدم - مع حالة المدير ووقت الإنتظار
+// ✅ API بيانات المستخدم
 // ============================================================
 app.get('/api/user/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         const isAdmin = (userId === ADMIN_ID);
 
-        console.log(`📡 User data: ${userId}, isAdmin: ${isAdmin}`);
-
         const stats = await query('SELECT * FROM user_game_stats WHERE user_id = $1', [userId]);
         const cooldown = await checkCooldown(userId);
-
-        console.log(`⏳ Cooldown for ${userId}: allowed=${cooldown.allowed}, remaining=${cooldown.remaining}`);
 
         res.json({
             success: true,
@@ -637,9 +554,6 @@ app.get('/api/user/:userId', async (req, res) => {
     }
 });
 
-// ============================================================
-// إحصائيات عامة (للمشرف)
-// ============================================================
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const userId = req.query.userId;
@@ -648,27 +562,22 @@ app.get('/api/admin/stats', async (req, res) => {
         }
 
         const globalStats = await query(`
-            SELECT 
-                COUNT(*) as total_plays,
-                SUM(CASE WHEN is_winner THEN 1 ELSE 0 END) as total_wins,
-                SUM(CASE WHEN is_winner THEN 0 ELSE 1 END) as total_losses,
-                COALESCE(SUM(prize_value), 0) as total_prizes,
-                COUNT(DISTINCT user_id) as unique_players
+            SELECT COUNT(*) as total_plays,
+                   SUM(CASE WHEN is_winner THEN 1 ELSE 0 END) as total_wins,
+                   SUM(CASE WHEN is_winner THEN 0 ELSE 1 END) as total_losses,
+                   COALESCE(SUM(prize_value), 0) as total_prizes,
+                   COUNT(DISTINCT user_id) as unique_players
             FROM game_plays
         `);
 
         const topPlayers = await query(`
             SELECT user_id, total_plays, total_wins, total_prize_value
-            FROM user_game_stats 
-            ORDER BY total_prize_value DESC 
-            LIMIT 10
+            FROM user_game_stats ORDER BY total_prize_value DESC LIMIT 10
         `);
 
         const recentPlays = await query(`
             SELECT *, TO_CHAR(play_date, 'YYYY-MM-DD HH24:MI:SS') as formatted_date
-            FROM game_plays 
-            ORDER BY play_date DESC 
-            LIMIT 20
+            FROM game_plays ORDER BY play_date DESC LIMIT 20
         `);
 
         const allPrizes = await query('SELECT * FROM game_prizes ORDER BY weight ASC');
@@ -687,24 +596,17 @@ app.get('/api/admin/stats', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('❌ Admin stats error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// ----- إضافة إيداع -----
 app.post('/api/admin/deposit', async (req, res) => {
     try {
         const { userId, targetUserId, amount } = req.body;
         if (userId !== ADMIN_ID) {
             return res.status(403).json({ success: false, error: 'Unauthorized' });
         }
-
-        await query(
-            `INSERT INTO game_deposits (user_id, amount) VALUES ($1, $2)`,
-            [targetUserId, amount]
-        );
-
+        await query(`INSERT INTO game_deposits (user_id, amount) VALUES ($1, $2)`, [targetUserId, amount]);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -719,12 +621,9 @@ io.on('connection', (socket) => {
     let userId = null;
 
     const pingInterval = setInterval(() => {
-        if (socket.connected) {
-            socket.emit('ping');
-        }
+        if (socket.connected) socket.emit('ping');
     }, 30000);
 
-    // ----- انضمام المستخدم وبدء اللعبة -----
     socket.on('join', async (data) => {
         try {
             userId = data.userId;
@@ -737,8 +636,6 @@ io.on('connection', (socket) => {
 
             // ✅ التحقق من فترة الإنتظار
             const cooldown = await checkCooldown(userId);
-            console.log(`⏳ Cooldown for ${userId}: allowed=${cooldown.allowed}, remaining=${cooldown.remaining}`);
-
             if (!cooldown.allowed) {
                 socket.emit('cooldown', {
                     remaining: cooldown.remaining,
@@ -748,14 +645,11 @@ io.on('connection', (socket) => {
             }
 
             if (gameState.activeGames.has(userId)) {
-                socket.emit('error', {
-                    code: 'GAME_ACTIVE',
-                    message: '⚠️ لديك لعبة نشطة'
-                });
+                socket.emit('error', { code: 'GAME_ACTIVE', message: '⚠️ لديك لعبة نشطة' });
                 return;
             }
 
-            // إنشاء لعبة جديدة
+            // ✅ إعدادات اللعبة
             const maxAttemptsSetting = await getSetting('max_attempts');
             const maxAttempts = maxAttemptsSetting?.value || 5;
 
@@ -764,37 +658,34 @@ io.on('connection', (socket) => {
 
             const symbols = gameState.cardImages.map(c => c.symbol);
 
-            // اختيار جائزة عشوائية
+            // ✅ اختيار جائزة عشوائية
             const selectedPrize = selectPrize();
             if (!selectedPrize) {
-                socket.emit('error', {
-                    code: 'NO_PRIZES',
-                    message: '❌ لا توجد جوائز'
-                });
+                socket.emit('error', { code: 'NO_PRIZES', message: '❌ لا توجد جوائز' });
                 return;
             }
 
             const winningSymbol = selectedPrize.prize_symbol;
-            const cardSymbols = [];
 
-            // 3 بطاقات متطابقة للفوز
-            for (let i = 0; i < 3; i++) {
-                cardSymbols.push(winningSymbol);
+            // ✅ إنشاء 12 بطاقة: 3 مجموعات من 4 رموز مختلفة
+            // كل رمز يظهر 3 مرات (3×4=12)
+            let cardSymbols = [];
+
+            // ✅ 4 رموز مختلفة، كل رمز يظهر 3 مرات
+            const allSymbols = ['♠', '♥', '♦', '♣'];
+            for (const sym of allSymbols) {
+                for (let i = 0; i < 3; i++) {
+                    cardSymbols.push(sym);
+                }
             }
 
-            // ملء الباقي برموز عشوائية
-            const otherSymbols = symbols.filter(s => s !== winningSymbol);
-            while (cardSymbols.length < cardsCount) {
-                const randomSymbol = otherSymbols[Math.floor(Math.random() * otherSymbols.length)];
-                if (randomSymbol) cardSymbols.push(randomSymbol);
-            }
-
-            // خلط البطاقات
+            // ✅ خلط البطاقات عشوائياً
             for (let i = cardSymbols.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [cardSymbols[i], cardSymbols[j]] = [cardSymbols[j], cardSymbols[i]];
             }
 
+            // ✅ تخزين بيانات اللعبة
             const gameData = {
                 userId,
                 cards: cardSymbols.map((symbol, index) => ({
@@ -815,8 +706,9 @@ io.on('connection', (socket) => {
             const cardBackSetting = await getSetting('card_back_image');
             const cardBackImage = cardBackSetting?.url || 'https://i.imgur.com/card_back.jpg';
 
+            // ✅ إرسال البطاقات للعميل
             socket.emit('game_started', {
-                cards: gameData.cards.map(c => ({ id: c.id, isRevealed: false, isMatched: false })),
+                cards: gameData.cards.map(c => ({ id: c.id, symbol: c.symbol, isRevealed: false, isMatched: false })),
                 prize: selectedPrize,
                 maxAttempts: gameData.maxAttempts,
                 cardsCount: cardsCount,
@@ -832,7 +724,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // ----- كشف البطاقة -----
     socket.on('reveal_card', async (data) => {
         try {
             if (!userId || !gameState.activeGames.has(userId)) {
@@ -852,6 +743,7 @@ io.on('connection', (socket) => {
                 return;
             }
 
+            // ✅ كشف البطاقة
             card.isRevealed = true;
             game.attempts++;
 
@@ -887,10 +779,9 @@ io.on('connection', (socket) => {
                 const prize = gameState.prizePool.find(p => p.prize_symbol === matchedSymbol);
                 const isWinner = prize !== null;
 
-                // ✅ تسجيل الفوز مع الجائزة
                 await recordPlay(userId, prize, game.attempts, matchedSymbol, isWinner);
 
-                // تجميع البطاقات المتطابقة
+                // ✅ تجميع البطاقات المتطابقة
                 const matchedCards = [];
                 game.cards.forEach(c => {
                     if (c.symbol === matchedSymbol && c.isRevealed && !c.isMatched) {
@@ -918,7 +809,6 @@ io.on('connection', (socket) => {
                 // ❌ خسارة - لا يوجد تطابق
                 game.isFinished = true;
 
-                // ✅ تسجيل الخسارة بدون جائزة
                 await recordPlay(userId, null, game.attempts, null, false);
 
                 const allCards = game.cards.map(c => ({
@@ -930,7 +820,7 @@ io.on('connection', (socket) => {
                 socket.emit('game_lost', {
                     attempts: game.attempts,
                     allCards,
-                    message: '😅 لم يتطابق 3 رموز، حظ أوفر في المرة القادمة!'
+                    message: '😅 لم يتطابق 3 رموز'
                 });
 
                 gameState.activeGames.delete(userId);
@@ -957,13 +847,12 @@ io.on('connection', (socket) => {
 // ============================================================
 server.listen(PORT, '0.0.0.0', () => {
     console.log('='.repeat(60));
-    console.log('🚀 JACKPOT SERVER - FINAL VERSION');
+    console.log('🚀 JACKPOT SERVER - FINAL');
     console.log('='.repeat(60));
     console.log(`📡 Port: ${PORT}`);
     console.log(`👑 Admin ID: ${ADMIN_ID}`);
-    console.log(`🎯 4 Prizes (matched symbols)`);
-    console.log(`🍀 No prize for no match`);
-    console.log(`⏰ 24h cooldown (Admin exempt)`);
+    console.log(`🎯 4 Prizes (♠♥♦♣)`);
+    console.log(`🃏 12 Cards (3 of each symbol)`);
     console.log('='.repeat(60));
 });
 
