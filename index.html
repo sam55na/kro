@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎰 جاك بوت - اللعبة النهائية</title>
+    <title>🎰 جاك بوت</title>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js">
     </script>
     <style>
@@ -557,7 +557,7 @@
             border: 2px solid rgba(255, 215, 0, 0.05);
         }
 
-        /* الوجه الخلفي */
+        /* الوجه الخلفي - بدون رمز ماكينة السلوتس */
         .card-back {
             background: linear-gradient(145deg, #1a0a0a, #0a0a0a);
             transform: rotateY(0deg);
@@ -623,18 +623,7 @@
             }
         }
 
-        .card-back .card-icon-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem;
-            z-index: 2;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
-            pointer-events: none;
-        }
-
-        /* الوجه الأمامي */
+        /* الوجه الأمامي - يظهر الرمز بوضوح */
         .card-front {
             transform: rotateY(180deg);
             background: linear-gradient(145deg, rgba(20, 10, 10, 0.95), rgba(5, 5, 5, 0.95));
@@ -659,6 +648,77 @@
         .card-container.disabled {
             cursor: not-allowed;
             opacity: 0.4;
+        }
+
+        /* --- تأثيرات الرسوم المتحركة للبطاقات --- */
+        .card-container.falling {
+            animation: cardFall 0.6s var(--transition) forwards;
+        }
+
+        @keyframes cardFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(120px) rotateX(90deg) scale(0.8);
+            }
+        }
+
+        .card-container.selected {
+            animation: cardSelected 0.5s var(--transition) forwards;
+        }
+
+        @keyframes cardSelected {
+            0% {
+                transform: translateY(0) scale(1);
+                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+            }
+            50% {
+                transform: translateY(-15px) scale(1.08);
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+            }
+            100% {
+                transform: translateY(-8px) scale(1.04);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            }
+        }
+
+        .card-container.winner {
+            animation: cardWinner 1s var(--transition) forwards;
+        }
+
+        @keyframes cardWinner {
+            0% {
+                transform: translateY(-8px) scale(1.04);
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            }
+            30% {
+                transform: translateY(-20px) scale(1.15);
+                box-shadow: 0 0 80px rgba(255, 215, 0, 0.4);
+            }
+            60% {
+                transform: translateY(-10px) scale(1.08);
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+            }
+            100% {
+                transform: translateY(-12px) scale(1.1);
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.25);
+            }
+        }
+
+        .card-container .card.glowing {
+            animation: cardGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes cardGlow {
+            0% {
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.1));
+            }
+            100% {
+                filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.3));
+            }
         }
 
         /* --- تأثير الفوز --- */
@@ -948,9 +1008,7 @@
             }
         }
 
-        /* ============================================================
-           لوحة الإدارة التفصيلية
-           ============================================================ */
+        /* --- لوحة الإدارة --- */
         #adminPanel {
             position: fixed;
             top: 55px;
@@ -1008,7 +1066,6 @@
             transform: rotate(90deg);
         }
 
-        /* --- تبويبات الإدارة --- */
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -1063,7 +1120,6 @@
             }
         }
 
-        /* --- بطاقات الإحصائيات --- */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1078,11 +1134,6 @@
             border: 1px solid rgba(255, 215, 0, 0.03);
             text-align: center;
             transition: all 0.3s ease;
-        }
-
-        .stats-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 215, 0, 0.06);
         }
 
         .stats-card .number {
@@ -1107,7 +1158,6 @@
             color: #00ff88;
         }
 
-        /* --- جداول الإدارة --- */
         .admin-table-wrapper {
             overflow-x: auto;
             margin-bottom: 10px;
@@ -1139,127 +1189,6 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        .admin-table tr:hover td {
-            background: rgba(255, 215, 0, 0.02);
-        }
-
-        .admin-table .badge-win {
-            color: #00ff88;
-        }
-        .admin-table .badge-lose {
-            color: var(--red);
-        }
-
-        /* --- إعدادات الإدارة --- */
-        .settings-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .settings-item {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 215, 0, 0.03);
-            transition: all 0.3s ease;
-        }
-
-        .settings-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .settings-item label {
-            display: block;
-            font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 4px;
-            letter-spacing: 1px;
-        }
-
-        .settings-item input[type="text"],
-        .settings-item input[type="number"],
-        .settings-item input[type="url"] {
-            width: 100%;
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.05);
-            border-radius: 6px;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            transition: all 0.3s ease;
-        }
-
-        .settings-item input:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
-        }
-
-        .settings-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--gold);
-            cursor: pointer;
-        }
-
-        .settings-item .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .settings-item .checkbox-group label {
-            margin-bottom: 0;
-            cursor: pointer;
-        }
-
-        .admin-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 0.6rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .admin-btn:hover {
-            transform: scale(1.03);
-        }
-
-        .admin-btn-gold {
-            background: linear-gradient(45deg, var(--gold-dark), var(--gold));
-            color: var(--black);
-        }
-
-        .admin-btn-gold:hover {
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
-        }
-
-        .admin-btn-danger {
-            background: linear-gradient(45deg, var(--red-dark), var(--red));
-            color: #fff;
-        }
-
-        .admin-btn-danger:hover {
-            box-shadow: 0 0 30px rgba(220, 20, 60, 0.15);
-        }
-
-        .admin-btn-success {
-            background: linear-gradient(45deg, #00aa55, #00ff88);
-            color: var(--black);
-        }
-
-        .admin-btn-success:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
-        }
-
         .admin-btn-block {
             width: 100%;
             padding: 10px;
@@ -1282,13 +1211,20 @@
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
         }
 
+        /* --- إخفاء إحصائيات المستخدم العادي --- */
+        .admin-only {
+            display: none !important;
+        }
+
+        .admin-only.show {
+            display: flex !important;
+        }
+
         /* --- تحسينات للشاشات الصغيرة --- */
         @media (max-width: 768px) {
             #adminPanel {
                 width: 100%;
                 right: -100%;
-                top: 50px;
-                height: calc(100vh - 50px);
                 padding: 12px;
             }
 
@@ -1301,25 +1237,13 @@
                 font-size: 2.5rem;
             }
 
-            .header-title {
-                font-size: 1rem;
-            }
-
             .btn-start {
                 padding: 12px 28px;
                 font-size: 0.75rem;
-                bottom: 15px;
             }
 
             .cooldown-content .timer {
                 font-size: 2.8rem;
-            }
-
-            .modal-title {
-                font-size: 1.8rem;
-            }
-            .modal-prize {
-                font-size: 3rem;
             }
 
             .stats-grid {
@@ -1329,16 +1253,6 @@
 
             .stats-card .number {
                 font-size: 1.1rem;
-            }
-
-            .admin-tab {
-                font-size: 0.4rem;
-                padding: 4px 10px;
-            }
-
-            .admin-table {
-                font-size: 0.5rem;
-                min-width: 280px;
             }
         }
 
@@ -1352,20 +1266,12 @@
                 font-size: 2rem;
             }
 
-            .header-stat .value {
-                font-size: 0.65rem;
-            }
-
             .btn-start {
                 padding: 10px 20px;
                 font-size: 0.65rem;
             }
 
             .cooldown-content .timer {
-                font-size: 2rem;
-            }
-
-            .loading-title {
                 font-size: 2rem;
             }
 
@@ -1381,35 +1287,6 @@
             .stats-card .number {
                 font-size: 1rem;
             }
-
-            .admin-panel-title {
-                font-size: 1rem;
-            }
-        }
-
-        /* --- إخفاء إحصائيات المستخدم العادي --- */
-        .admin-only {
-            display: none !important;
-        }
-
-        .admin-only.show {
-            display: flex !important;
-        }
-
-        /* --- Scrollbar styling --- */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--black);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 2px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gold-light);
         }
     </style>
 </head>
@@ -1519,73 +1396,14 @@
     <div class="error-toast" id="errorToast"></div>
 
     <!-- ============================================================
-    لوحة الإدارة التفصيلية
+    لوحة الإدارة
     ============================================================ -->
     <div id="adminPanel">
         <button class="admin-close" onclick="closeAdminPanel()">✕</button>
-        <div class="admin-panel-title">⚙️ لوحة التحكم الشاملة</div>
-
-        <!-- تبويبات الإدارة -->
-        <div class="admin-tabs" id="adminTabs">
-            <button class="admin-tab active" data-tab="dashboard">📊 الإحصائيات</button>
-            <button class="admin-tab" data-tab="prizes">🏆 الجوائز</button>
-            <button class="admin-tab" data-tab="cards">🖼️ البطاقات</button>
-            <button class="admin-tab" data-tab="settings">⚙️ الإعدادات</button>
-            <button class="admin-tab" data-tab="players">👥 اللاعبين</button>
-            <button class="admin-tab" data-tab="logs">📋 السجل</button>
-        </div>
-
-        <!-- ===== تبويب الإحصائيات ===== -->
-        <div class="admin-tab-content active" id="tab-dashboard">
-            <div id="dashboardContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل الإحصائيات...
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== تبويب الجوائز ===== -->
-        <div class="admin-tab-content" id="tab-prizes">
-            <div id="prizesContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل الجوائز...
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== تبويب البطاقات ===== -->
-        <div class="admin-tab-content" id="tab-cards">
-            <div id="cardsContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل صور البطاقات...
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== تبويب الإعدادات ===== -->
-        <div class="admin-tab-content" id="tab-settings">
-            <div id="settingsContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل الإعدادات...
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== تبويب اللاعبين ===== -->
-        <div class="admin-tab-content" id="tab-players">
-            <div id="playersContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل اللاعبين...
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== تبويب السجل ===== -->
-        <div class="admin-tab-content" id="tab-logs">
-            <div id="logsContent">
-                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                    ⏳ جاري تحميل السجل...
-                </div>
+        <div class="admin-panel-title">⚙️ لوحة التحكم</div>
+        <div id="adminContent">
+            <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
+                ⏳ جاري تحميل البيانات...
             </div>
         </div>
     </div>
@@ -1633,7 +1451,7 @@
         createGoldParticles();
 
         // ============================================================
-        // 3. نظام الصوت
+        // 3. نظام الصوت الاحترافي
         // ============================================================
 
         function initAudio() {
@@ -1644,53 +1462,219 @@
 
         function playSound(type) {
             if (!audioContext) return;
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
 
-                switch (type) {
-                    case 'click':
-                        oscillator.frequency.value = 880;
-                        oscillator.type = 'sine';
-                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.08);
-                        break;
-                    case 'flip':
-                        oscillator.frequency.value = 500;
-                        oscillator.type = 'sine';
-                        gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.12);
-                        break;
-                    case 'win':
-                        [523, 659, 784, 1047].forEach((freq, i) => {
+            try {
+                // نغمة النقر
+                if (type === 'click') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 880;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.08);
+                    return;
+                }
+
+                // نغمة قلب البطاقة
+                if (type === 'flip') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 500;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.06, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.12);
+
+                    // إضافة نغمة ثانية لتأثير أفضل
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 600;
+                        osc2.type = 'sine';
+                        gain2.gain.setValueAtTime(0.04, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.08);
+                    }, 50);
+                    return;
+                }
+
+                // نغمة التطابق
+                if (type === 'match') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 650;
+                    osc.type = 'square';
+                    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.15);
+
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 850;
+                        osc2.type = 'sine';
+                        gain2.gain.setValueAtTime(0.04, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.1);
+                    }, 100);
+                    return;
+                }
+
+                // نغمة الفوز - سلسلة من النغمات التصاعدية
+                if (type === 'win') {
+                    const notes = [523, 587, 659, 784, 880, 1047];
+                    notes.forEach((freq, i) => {
+                        setTimeout(() => {
                             const osc = audioContext.createOscillator();
                             const gain = audioContext.createGain();
                             osc.connect(gain);
                             gain.connect(audioContext.destination);
                             osc.frequency.value = freq;
                             osc.type = 'sine';
-                            gain.gain.setValueAtTime(0.08, audioContext.currentTime + i * 0.13);
-                            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + i * 0.13 + 0.2);
-                            osc.start(audioContext.currentTime + i * 0.13);
-                            osc.stop(audioContext.currentTime + i * 0.13 + 0.2);
+                            gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+                            osc.start(audioContext.currentTime);
+                            osc.stop(audioContext.currentTime + 0.2);
+                        }, i * 130);
+                    });
+
+                    // إضافة نغمات إضافية لتأثير الفوز الكبير
+                    setTimeout(() => {
+                        [1047, 1318, 1568].forEach((freq, i) => {
+                            setTimeout(() => {
+                                const osc = audioContext.createOscillator();
+                                const gain = audioContext.createGain();
+                                osc.connect(gain);
+                                gain.connect(audioContext.destination);
+                                osc.frequency.value = freq;
+                                osc.type = 'sine';
+                                gain.gain.setValueAtTime(0.06, audioContext.currentTime);
+                                gain.gain.exponentialRampToValueAtTime(0.001, audioContext
+                                    .currentTime + 0.3);
+                                osc.start(audioContext.currentTime);
+                                osc.stop(audioContext.currentTime + 0.3);
+                            }, i * 150);
                         });
-                        break;
-                    case 'lose':
-                        oscillator.frequency.value = 250;
-                        oscillator.type = 'sawtooth';
-                        gainNode.gain.setValueAtTime(0.04, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        break;
+                    }, notes.length * 130 + 100);
+                    return;
                 }
-            } catch (_) {}
+
+                // نغمة الخسارة
+                if (type === 'lose') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 250;
+                    osc.type = 'sawtooth';
+                    gain.gain.setValueAtTime(0.04, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.5);
+
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 200;
+                        osc2.type = 'sawtooth';
+                        gain2.gain.setValueAtTime(0.03, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.4);
+                    }, 200);
+                    return;
+                }
+
+                // نغمة اختيار البطاقة
+                if (type === 'select') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 700;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.05, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.1);
+
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 900;
+                        osc2.type = 'sine';
+                        gain2.gain.setValueAtTime(0.03, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.08);
+                    }, 80);
+                    return;
+                }
+
+                // نغمة سقوط البطاقة
+                if (type === 'fall') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 300;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.03, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.3);
+                    return;
+                }
+
+                // نغمة ترتيب البطاقات
+                if (type === 'arrange') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 550;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.04, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.15);
+
+                    setTimeout(() => {
+                        const osc2 = audioContext.createOscillator();
+                        const gain2 = audioContext.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioContext.destination);
+                        osc2.frequency.value = 700;
+                        osc2.type = 'sine';
+                        gain2.gain.setValueAtTime(0.03, audioContext.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                        osc2.start(audioContext.currentTime);
+                        osc2.stop(audioContext.currentTime + 0.1);
+                    }, 100);
+                    return;
+                }
+
+            } catch (_) { /* تجاهل أخطاء الصوت */ }
         }
 
         // ============================================================
@@ -1872,7 +1856,6 @@
                         badge.classList.add('admin');
                         isAdmin = true;
                         document.getElementById('adminToggle').style.display = 'block';
-                        // تحميل بيانات الإدارة
                         setTimeout(() => {
                             loadAdminDashboard();
                         }, 500);
@@ -1882,9 +1865,13 @@
                         document.getElementById('adminToggle').style.display = 'none';
                     }
 
-                    if (data.user.cooldown?.allowed) {
+                    // ✅ التحقق من صلاحية اللعب - لا نظهر العداد للمدير
+                    if (isAdminUser) {
+                        document.getElementById('startGameBtn').style.display = 'block';
+                    } else if (data.user.cooldown?.allowed) {
                         document.getElementById('startGameBtn').style.display = 'block';
                     } else if (data.user.cooldown?.remaining) {
+                        document.getElementById('startGameBtn').style.display = 'none';
                         showCooldown(data.user.cooldown.remaining);
                     }
 
@@ -1948,6 +1935,7 @@
 
         function handleCooldown(data) {
             if (data && data.remaining > 0) {
+                document.getElementById('startGameBtn').style.display = 'none';
                 showCooldown(data.remaining);
                 showToast(data.message || '⏳ يرجى الانتظار', 'info');
             }
@@ -2009,7 +1997,6 @@
                 back.innerHTML = `
                             <img class="card-back-image" src="${backImage}" alt="Card Back" loading="lazy">
                             <div class="fire-effect"></div>
-                            <div class="card-icon-overlay">🎰</div>
                         `;
 
                 const front = document.createElement('div');
@@ -2045,6 +2032,12 @@
             if (!container) return;
 
             const card = container.querySelector('.card');
+
+            // ✅ إضافة تأثير الإضاءة عند الاختيار
+            container.classList.add('selected');
+            playSound('select');
+
+            // ✅ قلب البطاقة وإظهار الرمز
             card.classList.add('flipped');
 
             const front = card.querySelector('.card-front');
@@ -2059,49 +2052,72 @@
                 const attempts = data.attempts || 0;
                 dot.className = i < attempts ? 'attempt-dot used' : 'attempt-dot active';
             });
+
+            // ✅ تشغيل صوت التطابق إذا كان هناك تطابق (يتم التعامل معه من الخادم)
         }
 
         function handleGameWon(data) {
             if (!data) return;
             isGameActive = false;
-            document.getElementById('startGameBtn').style.display = 'block';
-            document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
             playSound('win');
 
+            // ✅ 1. إضافة تأثير الإضاءة على البطاقات الرابحة
             const matchedIds = (data.matchedCards || []).map(c => c.id);
-            const allCards = document.querySelectorAll('.card-container');
-            allCards.forEach((container, index) => {
+            const allContainers = document.querySelectorAll('.card-container');
+
+            // ✅ 2. سقوط البطاقات غير الرابحة واحد تلو الآخر
+            allContainers.forEach((container, index) => {
                 if (!matchedIds.includes(index)) {
-                    container.style.transition = 'all 0.5s ease';
                     setTimeout(() => {
-                        container.style.opacity = '0';
-                        container.style.transform = 'scale(0.3) rotateY(90deg)';
-                        container.style.pointerEvents = 'none';
-                    }, 100);
-                } else {
-                    const card = container.querySelector('.card');
-                    card.classList.add('matched');
-                    container.style.transform = 'translateY(-8px) scale(1.05)';
-                    container.style.boxShadow = '0 15px 50px rgba(255, 215, 0, 0.15)';
+                        container.classList.add('falling');
+                        playSound('fall');
+                    }, index * 150);
                 }
             });
 
-            const overlay = document.getElementById('winOverlay');
-            overlay.classList.add('show');
-            setTimeout(() => overlay.classList.remove('show'), 500);
+            // ✅ 3. ترتيب البطاقات الرابحة في المنتصف
+            setTimeout(() => {
+                const matchedContainers = [];
+                allContainers.forEach((container, index) => {
+                    if (matchedIds.includes(index)) {
+                        matchedContainers.push(container);
+                        container.classList.add('winner');
+                        container.classList.remove('selected');
+                    }
+                });
 
-            showResult(true, data.prize);
-            playWinEffect();
-            updateUserStats();
+                // ترتيب البطاقات الرابحة
+                matchedContainers.forEach((container, i) => {
+                    setTimeout(() => {
+                        container.style.transform = `translateX(${(i - (matchedContainers.length - 1) / 2) * 80}px) translateY(-20px) scale(1.1)`;
+                        container.style.zIndex = '10';
+                        playSound('arrange');
+                    }, i * 200);
+                });
+
+                // ✅ 4. عرض النتيجة بعد الترتيب
+                setTimeout(() => {
+                    const overlay = document.getElementById('winOverlay');
+                    overlay.classList.add('show');
+                    setTimeout(() => overlay.classList.remove('show'), 500);
+
+                    showResult(true, data.prize);
+                    playWinEffect();
+                    updateUserStats();
+
+                    document.getElementById('startGameBtn').style.display = 'block';
+                    document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
+                }, matchedContainers.length * 200 + 500);
+
+            }, allContainers.length * 150 + 300);
         }
 
         function handleGameLost(data) {
             if (!data) return;
             isGameActive = false;
-            document.getElementById('startGameBtn').style.display = 'block';
-            document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
             playSound('lose');
 
+            // ✅ 1. كشف جميع البطاقات
             const allCards = data.allCards || [];
             allCards.forEach((c, index) => {
                 const container = document.querySelector(`.card-container[data-index="${c.id}"]`);
@@ -2113,15 +2129,32 @@
                     } else {
                         front.innerHTML = `<div class="symbol-text">${c.symbol || '?'}</div>`;
                     }
-                    setTimeout(() => card.classList.add('flipped'), index * 60);
+                    setTimeout(() => {
+                        card.classList.add('flipped');
+                        container.classList.add('selected');
+                        playSound('flip');
+                    }, index * 120);
                 }
             });
 
+            // ✅ 2. سقوط جميع البطاقات واحدة تلو الأخرى
+            setTimeout(() => {
+                document.querySelectorAll('.card-container').forEach((container, index) => {
+                    setTimeout(() => {
+                        container.classList.add('falling');
+                        playSound('fall');
+                    }, index * 100);
+                });
+            }, allCards.length * 120 + 300);
+
+            // ✅ 3. عرض نتيجة حظ أوفر
             setTimeout(() => {
                 showResult(false, data.luckyPrize, data.message);
-            }, allCards.length * 60 + 500);
+                updateUserStats();
 
-            updateUserStats();
+                document.getElementById('startGameBtn').style.display = 'block';
+                document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
+            }, allCards.length * 120 + allCards.length * 100 + 600);
         }
 
         // ============================================================
@@ -2147,11 +2180,15 @@
 
         function closeResult() {
             document.getElementById('resultModal').classList.remove('show');
+            // إعادة تعيين البطاقات
             document.querySelectorAll('.card-container').forEach(container => {
                 container.style.opacity = '1';
                 container.style.transform = '';
                 container.style.boxShadow = '';
                 container.style.pointerEvents = '';
+                container.classList.remove('falling', 'selected', 'winner');
+                const card = container.querySelector('.card');
+                if (card) card.classList.remove('flipped', 'matched');
             });
         }
 
@@ -2180,62 +2217,29 @@
             container.className = 'confetti-container';
             document.body.appendChild(container);
 
-            const colors = ['#FFD700', '#FFE44D', '#DAA520', '#FFFFFF', '#DC143C', '#FF6B35'];
-            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦'];
+            const colors = ['#FFD700', '#FFE44D', '#DAA520', '#FFFFFF', '#DC143C', '#FF6B35', '#FFAA00', '#00ff88'];
+            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦', '✦'];
 
-            for (let i = 0; i < 120; i++) {
+            for (let i = 0; i < 150; i++) {
                 const el = document.createElement('div');
                 el.className = 'confetti-piece';
                 el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
                 el.style.left = Math.random() * 100 + '%';
                 el.style.color = colors[Math.floor(Math.random() * colors.length)];
-                el.style.fontSize = (Math.random() * 20 + 8) + 'px';
-                el.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                el.style.animationDelay = (Math.random() * 1.5) + 's';
+                el.style.fontSize = (Math.random() * 22 + 8) + 'px';
+                el.style.animationDuration = (Math.random() * 3.5 + 1.8) + 's';
+                el.style.animationDelay = (Math.random() * 1.8) + 's';
                 container.appendChild(el);
             }
-            setTimeout(() => container.remove(), 5000);
+            setTimeout(() => container.remove(), 5500);
         }
 
         // ============================================================
-        // 15. لوحة الإدارة التفصيلية
+        // 15. لوحة الإدارة - تبويب الإحصائيات
         // ============================================================
 
-        // --- تبديل تبويبات الإدارة ---
-        function switchAdminTab(tabName) {
-            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
-
-            document.querySelector(`.admin-tab[data-tab="${tabName}"]`)?.classList.add('active');
-            document.getElementById(`tab-${tabName}`)?.classList.add('active');
-
-            // تحميل المحتوى حسب التبويب
-            switch (tabName) {
-                case 'dashboard':
-                    loadAdminDashboard();
-                    break;
-                case 'prizes':
-                    loadAdminPrizes();
-                    break;
-                case 'cards':
-                    loadAdminCards();
-                    break;
-                case 'settings':
-                    loadAdminSettings();
-                    break;
-                case 'players':
-                    loadAdminPlayers();
-                    break;
-                case 'logs':
-                    loadAdminLogs();
-                    break;
-            }
-        }
-
-        // --- تحميل الإحصائيات العامة والتفصيلية ---
         async function loadAdminDashboard() {
-            const content = document.getElementById('dashboardContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل الإحصائيات...</div>';
+            const content = document.getElementById('adminContent');
 
             try {
                 const data = await fetchAdminStats();
@@ -2252,9 +2256,14 @@
                 const global = stats.global || {};
                 const today = stats.today || {};
                 const topPlayers = stats.topPlayers || [];
+                const recentPlays = stats.recentPlays || [];
+                const prizes = stats.allPrizes || [];
+                const lucky = stats.luckyPrize || { name: '🍀 حظ أوفر', value: 100, icon: '🍀' };
 
                 let html = `
-                            <!-- البطاقات الإحصائية -->
+                            <div style="font-size:0.65rem; color:rgba(255,215,0,0.4); margin-bottom:10px; text-align:center; letter-spacing:2px;">
+                                📊 الإحصائيات العامة
+                            </div>
                             <div class="stats-grid">
                                 <div class="stats-card">
                                     <div class="number">${global.total_plays || 0}</div>
@@ -2321,7 +2330,6 @@
                 }
 
                 // آخر الجولات
-                const recentPlays = stats.recentPlays || [];
                 if (recentPlays.length > 0) {
                     html += `
                                 <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin:10px 0 5px;">📋 آخر الجولات</div>
@@ -2340,8 +2348,8 @@
 
                     recentPlays.slice(0, 10).forEach(p => {
                         const status = p.is_winner ?
-                            '<span class="badge-win">✅ فوز</span>' :
-                            '<span class="badge-lose">🍀 حظ أوفر</span>';
+                            '<span style="color:#00ff88;">✅ فوز</span>' :
+                            '<span style="color:#DC143C;">🍀 حظ أوفر</span>';
                         html += `
                                     <tr>
                                         <td><code style="color:var(--gold); font-size:0.5rem;">${p.user_id}</code></td>
@@ -2360,7 +2368,6 @@
                 }
 
                 // الجوائز الحالية
-                const prizes = stats.allPrizes || [];
                 if (prizes.length > 0) {
                     html += `
                                 <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin:10px 0 5px;">🎯 الجوائز الحالية</div>
@@ -2382,7 +2389,6 @@
                 }
 
                 // جائزة حظ أوفر
-                const lucky = stats.luckyPrize || { name: '🍀 حظ أوفر', value: 100 };
                 html += `
                             <div style="margin-top:10px; padding:8px 12px; background:rgba(255,215,0,0.02); border-radius:8px; border:1px solid rgba(255,215,0,0.05); display:flex; justify-content:space-between; align-items:center; font-size:0.55rem;">
                                 <span>${lucky.icon || '🍀'} ${lucky.name || 'حظ أوفر'}</span>
@@ -2405,642 +2411,15 @@
             }
         }
 
-        // --- تحميل الجوائز ---
-        async function loadAdminPrizes() {
-            const content = document.getElementById('prizesContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل الجوائز...</div>';
-
-            try {
-                const data = await fetchAdminStats();
-                if (!data || !data.success) {
-                    content.innerHTML = `
-                                <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                    ❌ فشل تحميل الجوائز
-                                </div>
-                            `;
-                    return;
-                }
-
-                const prizes = data.stats?.allPrizes || [];
-                const lucky = data.stats?.luckyPrize || { name: '🍀 حظ أوفر', value: 100, icon: '🍀' };
-
-                let html = `
-                            <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin-bottom:8px;">🏆 إدارة الجوائز (4 جوائز)</div>
-                            <div class="admin-table-wrapper">
-                                <table class="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>الرمز</th>
-                                            <th>الاسم</th>
-                                            <th>القيمة</th>
-                                            <th>الوزن</th>
-                                            <th>الحالة</th>
-                                            <th>الإجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                `;
-
-                prizes.forEach(p => {
-                    const status = p.is_active ?
-                        '<span style="color:#00ff88;">✅ مفعل</span>' :
-                        '<span style="color:#DC143C;">❌ معطل</span>';
-                    html += `
-                                <tr>
-                                    <td style="font-size:1.2rem;">${p.prize_icon || '🎁'}</td>
-                                    <td>${p.prize_name || 'جائزة'}</td>
-                                    <td style="color:var(--gold);">${p.prize_value || 0} SYP</td>
-                                    <td>${p.weight || 1}</td>
-                                    <td>${status}</td>
-                                    <td>
-                                        <button class="admin-btn admin-btn-gold" style="padding:3px 10px; font-size:0.45rem; margin:2px;" onclick="editPrize(${p.id})">✏️</button>
-                                        <button class="admin-btn admin-btn-danger" style="padding:3px 10px; font-size:0.45rem; margin:2px;" onclick="deletePrize(${p.id})">🗑️</button>
-                                    </td>
-                                </tr>
-                            `;
-                });
-
-                html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="admin-btn-block" onclick="addPrize()">➕ إضافة جائزة جديدة</button>
-                            <div style="margin-top:10px; padding:10px; background:rgba(255,215,0,0.02); border-radius:8px; border:1px solid rgba(255,215,0,0.05);">
-                                <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin-bottom:5px;">🍀 جائزة حظ أوفر</div>
-                                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                                    <input type="text" id="luckyName" value="${lucky.name || '🍀 حظ أوفر'}" style="flex:1; min-width:80px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                    <input type="number" id="luckyValue" value="${lucky.value || 100}" style="width:70px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                    <button class="admin-btn admin-btn-gold" onclick="updateLuckyPrize()" style="padding:4px 12px; font-size:0.5rem;">💾 حفظ</button>
-                                </div>
-                            </div>
-                            <button class="admin-btn-block" onclick="loadAdminPrizes()" style="margin-top:10px;">
-                                🔄 تحديث الجوائز
-                            </button>
-                        `;
-
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('❌ Prizes error:', error);
-                content.innerHTML = `
-                            <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                ❌ حدث خطأ في تحميل الجوائز
-                            </div>
-                        `;
-            }
-        }
-
-        // --- تحميل صور البطاقات ---
-        async function loadAdminCards() {
-            const content = document.getElementById('cardsContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل صور البطاقات...</div>';
-
-            try {
-                const data = await fetchAdminStats();
-                if (!data || !data.success) {
-                    content.innerHTML = `
-                                <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                    ❌ فشل تحميل صور البطاقات
-                                </div>
-                            `;
-                    return;
-                }
-
-                const cardImages = data.stats?.cardImages || [];
-
-                let html = `
-                            <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin-bottom:8px;">🖼️ صور البطاقات (4 صور)</div>
-                            <div style="display:grid; grid-template-columns:1fr; gap:8px;">
-                        `;
-
-                cardImages.forEach((img, index) => {
-                    html += `
-                                <div style="background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,215,0,0.03);">
-                                    <label style="font-size:0.5rem; color:rgba(255,255,255,0.3);">البطاقة ${index + 1} (${img.symbol || '♠'})</label>
-                                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px;">
-                                        <input type="url" id="cardImg_${index}" value="${img.image_url || ''}" placeholder="رابط الصورة" style="flex:1; min-width:120px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                        <input type="text" id="cardSymbol_${index}" value="${img.symbol || '♠'}" placeholder="الرمز" style="width:50px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem; text-align:center;">
-                                        <div style="width:40px; height:40px; background:rgba(255,255,255,0.03); border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,215,0,0.05);">
-                                            ${img.image_url ? `<img src="${img.image_url}" alt="${img.symbol}" style="width:100%; height:100%; object-fit:contain;">` : `<span style="font-size:1.2rem; color:rgba(255,215,0,0.2);">${img.symbol || '?'}</span>`}
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                });
-
-                html += `
-                            </div>
-                            <button class="admin-btn-block" onclick="saveCardImages()">💾 حفظ صور البطاقات</button>
-                            <button class="admin-btn-block" onclick="loadAdminCards()" style="margin-top:8px;">
-                                🔄 تحديث الصور
-                            </button>
-                        `;
-
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('❌ Cards error:', error);
-                content.innerHTML = `
-                            <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                ❌ حدث خطأ في تحميل صور البطاقات
-                            </div>
-                        `;
-            }
-        }
-
-        // --- تحميل الإعدادات ---
-        async function loadAdminSettings() {
-            const content = document.getElementById('settingsContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل الإعدادات...</div>';
-
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/settings`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-
-                if (!data || !data.success) {
-                    content.innerHTML = `
-                                <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                    ❌ فشل تحميل الإعدادات
-                                </div>
-                            `;
-                    return;
-                }
-
-                const settings = data.settings || {};
-
-                const settingsMap = {
-                    'loading_image': { label: 'صورة التحميل', type: 'url', placeholder: 'رابط الصورة' },
-                    'background_image': { label: 'خلفية اللعبة', type: 'url', placeholder: 'رابط الصورة' },
-                    'card_back_image': { label: 'ظهر البطاقة', type: 'url', placeholder: 'رابط الصورة' },
-                    'max_attempts': { label: 'عدد المحاولات', type: 'number', placeholder: '5' },
-                    'cards_count': { label: 'عدد البطاقات', type: 'number', placeholder: '12' },
-                    'game_title': { label: 'عنوان اللعبة', type: 'text', placeholder: '🎰 جاك بوت' },
-                    'cooldown_hours': { label: 'فترة الإنتظار (ساعات)', type: 'number', placeholder: '24' },
-                    'deposit_required': { label: 'شرط الإيداع', type: 'checkbox' }
-                };
-
-                let html = `
-                            <div class="settings-group">
-                        `;
-
-                for (const [key, setting] of Object.entries(settingsMap)) {
-                    const value = settings[key] || {};
-                    html += `
-                                <div class="settings-item">
-                            `;
-
-                    if (setting.type === 'checkbox') {
-                        const checked = value.enabled ? 'checked' : '';
-                        html += `
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="setting_${key}" ${checked} data-key="${key}">
-                                        <label for="setting_${key}">${setting.label}</label>
-                                    </div>
-                                `;
-                        if (key === 'deposit_required' && value.min_amount) {
-                            html += `
-                                        <div style="margin-top:4px;">
-                                            <input type="number" id="setting_min_deposit" value="${value.min_amount || 1000}" placeholder="الحد الأدنى" style="width:100%; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                        </div>
-                                    `;
-                        }
-                    } else {
-                        const val = value.url || value.text || value.value || '';
-                        html += `
-                                    <label for="setting_${key}">${setting.label}</label>
-                                    <input type="${setting.type}" id="setting_${key}" value="${val}" placeholder="${setting.placeholder}" data-key="${key}">
-                                `;
-                    }
-
-                    html += `
-                                </div>
-                            `;
-                }
-
-                html += `
-                            </div>
-                            <button class="admin-btn-block" onclick="saveAllSettings()">💾 حفظ جميع الإعدادات</button>
-                            <button class="admin-btn-block" onclick="loadAdminSettings()" style="margin-top:8px;">
-                                🔄 تحديث الإعدادات
-                            </button>
-                        `;
-
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('❌ Settings error:', error);
-                content.innerHTML = `
-                            <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                ❌ حدث خطأ في تحميل الإعدادات
-                            </div>
-                        `;
-            }
-        }
-
-        // --- تحميل اللاعبين ---
-        async function loadAdminPlayers() {
-            const content = document.getElementById('playersContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل اللاعبين...</div>';
-
-            try {
-                const data = await fetchAdminStats();
-                if (!data || !data.success) {
-                    content.innerHTML = `
-                                <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                    ❌ فشل تحميل اللاعبين
-                                </div>
-                            `;
-                    return;
-                }
-
-                const topPlayers = data.stats?.topPlayers || [];
-
-                let html = `
-                            <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin-bottom:8px;">👥 إدارة اللاعبين</div>
-                            <div style="margin-bottom:10px; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; border:1px solid rgba(255,215,0,0.03);">
-                                <label style="font-size:0.5rem; color:rgba(255,255,255,0.3);">إضافة إيداع للاعب</label>
-                                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
-                                    <input type="text" id="depositUserId" placeholder="معرف المستخدم" style="flex:1; min-width:80px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                    <input type="number" id="depositAmount" placeholder="المبلغ" style="width:70px; padding:4px 8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,215,0,0.05); border-radius:6px; color:#fff; font-family:'Orbitron',sans-serif; font-size:0.5rem;">
-                                    <button class="admin-btn admin-btn-success" onclick="addDeposit()" style="padding:4px 12px; font-size:0.5rem;">💰 إضافة</button>
-                                </div>
-                            </div>
-                            <div class="admin-table-wrapper">
-                                <table class="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>المستخدم</th>
-                                            <th>الجولات</th>
-                                            <th>الفوز</th>
-                                            <th>الخسارة</th>
-                                            <th>الجوائز</th>
-                                            <th>آخر لعب</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                `;
-
-                topPlayers.slice(0, 20).forEach((p, i) => {
-                    html += `
-                                <tr>
-                                    <td>${i + 1}</td>
-                                    <td><code style="color:var(--gold); font-size:0.5rem;">${p.user_id}</code></td>
-                                    <td>${p.total_plays || 0}</td>
-                                    <td style="color:#00ff88;">${p.total_wins || 0}</td>
-                                    <td style="color:#DC143C;">${(p.total_plays || 0) - (p.total_wins || 0)}</td>
-                                    <td style="color:var(--gold);">${p.total_prize_value || 0} SYP</td>
-                                    <td style="font-size:0.45rem; color:rgba(255,255,255,0.2);">${p.last_play || 'غير معروف'}</td>
-                                </tr>
-                            `;
-                });
-
-                html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="admin-btn-block" onclick="loadAdminPlayers()" style="margin-top:8px;">
-                                🔄 تحديث اللاعبين
-                            </button>
-                        `;
-
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('❌ Players error:', error);
-                content.innerHTML = `
-                            <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                ❌ حدث خطأ في تحميل اللاعبين
-                            </div>
-                        `;
-            }
-        }
-
-        // --- تحميل سجل الإدارة ---
-        async function loadAdminLogs() {
-            const content = document.getElementById('logsContent');
-            content.innerHTML = '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">⏳ جاري تحميل السجل...</div>';
-
-            try {
-                const response = await fetchWithTimeout(`${SERVER_URL}/api/admin/logs?userId=${userId}`, {}, 8000);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-
-                if (!data || !data.success) {
-                    content.innerHTML = `
-                                <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                    ❌ فشل تحميل السجل
-                                </div>
-                            `;
-                    return;
-                }
-
-                const logs = data.logs || [];
-
-                if (logs.length === 0) {
-                    content.innerHTML = `
-                                <div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px; font-size:0.8rem;">
-                                    📭 لا توجد سجلات حالياً
-                                </div>
-                            `;
-                    return;
-                }
-
-                let html = `
-                            <div style="font-size:0.6rem; color:rgba(255,215,0,0.3); margin-bottom:8px;">📋 سجل التغييرات</div>
-                            <div class="admin-table-wrapper">
-                                <table class="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>الإجراء</th>
-                                            <th>التفاصيل</th>
-                                            <th>التاريخ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                `;
-
-                logs.forEach((log, i) => {
-                    let details = '';
-                    try {
-                        const d = typeof log.details === 'string' ? JSON.parse(log.details) : log.details;
-                        details = JSON.stringify(d).substring(0, 30) + (JSON.stringify(d).length > 30 ? '...' : '');
-                    } catch {
-                        details = String(log.details || '').substring(0, 30);
-                    }
-
-                    html += `
-                                <tr>
-                                    <td>${i + 1}</td>
-                                    <td style="color:var(--gold); font-size:0.5rem;">${log.action || 'غير معروف'}</td>
-                                    <td style="font-size:0.45rem; color:rgba(255,255,255,0.4);">${details || '-'}</td>
-                                    <td style="font-size:0.45rem; color:rgba(255,255,255,0.2);">${log.created_at || 'غير معروف'}</td>
-                                </tr>
-                            `;
-                });
-
-                html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="admin-btn-block" onclick="loadAdminLogs()" style="margin-top:8px;">
-                                🔄 تحديث السجل
-                            </button>
-                        `;
-
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('❌ Logs error:', error);
-                content.innerHTML = `
-                            <div style="color:#DC143C; text-align:center; padding:20px; font-size:0.8rem;">
-                                ❌ حدث خطأ في تحميل السجل
-                            </div>
-                        `;
-            }
-        }
-
         // ============================================================
-        // 16. دوال إدارة الجوائز
-        // ============================================================
-
-        function addPrize() {
-            const name = prompt('اسم الجائزة:');
-            if (!name) return;
-            const value = prompt('قيمة الجائزة:');
-            if (!value) return;
-            const icon = prompt('رمز الجائزة (مثل 🔥):');
-            if (!icon) return;
-            const symbol = prompt('رمز البطاقة (♠♥♦♣):', '♠');
-            if (!symbol) return;
-            const weight = prompt('الوزن (كلما زاد زادت فرصة الظهور):', '1');
-
-            fetch(`${SERVER_URL}/api/admin/prizes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId,
-                    prize: {
-                        prize_name: name,
-                        prize_value: parseInt(value) || 0,
-                        prize_icon: icon,
-                        prize_symbol: symbol,
-                        weight: parseInt(weight) || 1,
-                        is_active: true
-                    }
-                })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    showToast('✅ تم إضافة الجائزة', 'info');
-                    loadAdminPrizes();
-                } else {
-                    showToast('❌ فشل إضافة الجائزة', 'error');
-                }
-            }).catch(() => showToast('❌ حدث خطأ', 'error'));
-        }
-
-        function editPrize(id) {
-            const name = prompt('الاسم الجديد:');
-            if (!name) return;
-            const value = prompt('القيمة الجديدة:');
-            if (!value) return;
-            const icon = prompt('الرمز الجديد:');
-            if (!icon) return;
-            const symbol = prompt('رمز البطاقة الجديد:');
-            if (!symbol) return;
-            const weight = prompt('الوزن الجديد:', '1');
-            const active = confirm('هل الجائزة مفعلة؟');
-
-            fetch(`${SERVER_URL}/api/admin/prizes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId,
-                    prize: {
-                        id: id,
-                        prize_name: name,
-                        prize_value: parseInt(value) || 0,
-                        prize_icon: icon,
-                        prize_symbol: symbol,
-                        weight: parseInt(weight) || 1,
-                        is_active: active
-                    }
-                })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    showToast('✅ تم تحديث الجائزة', 'info');
-                    loadAdminPrizes();
-                } else {
-                    showToast('❌ فشل تحديث الجائزة', 'error');
-                }
-            }).catch(() => showToast('❌ حدث خطأ', 'error'));
-        }
-
-        function deletePrize(id) {
-            if (!confirm('هل أنت متأكد من حذف هذه الجائزة؟')) return;
-
-            fetch(`${SERVER_URL}/api/admin/prizes/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    showToast('✅ تم حذف الجائزة', 'info');
-                    loadAdminPrizes();
-                } else {
-                    showToast('❌ فشل حذف الجائزة', 'error');
-                }
-            }).catch(() => showToast('❌ حدث خطأ', 'error'));
-        }
-
-        function updateLuckyPrize() {
-            const name = document.getElementById('luckyName')?.value || '🍀 حظ أوفر';
-            const value = parseInt(document.getElementById('luckyValue')?.value) || 100;
-
-            fetch(`${SERVER_URL}/api/admin/lucky-prize`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId,
-                    luckyPrize: { name, value, icon: '🍀' }
-                })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    showToast('✅ تم تحديث جائزة حظ أوفر', 'info');
-                    loadAdminPrizes();
-                } else {
-                    showToast('❌ فشل التحديث', 'error');
-                }
-            }).catch(() => showToast('❌ حدث خطأ', 'error'));
-        }
-
-        // ============================================================
-        // 17. دوال إدارة صور البطاقات
-        // ============================================================
-
-        function saveCardImages() {
-            const images = [];
-            for (let i = 0; i < 4; i++) {
-                const url = document.getElementById(`cardImg_${i}`)?.value;
-                const symbol = document.getElementById(`cardSymbol_${i}`)?.value || '♠';
-                if (url) {
-                    images.push({ index: i, url, symbol });
-                }
-            }
-
-            if (images.length === 0) {
-                showToast('❌ يجب إدخال صور للبطاقات', 'error');
-                return;
-            }
-
-            fetch(`${SERVER_URL}/api/admin/card-images`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, images })
-            }).then(r => r.json()).then(d => {
-                if (d.success) {
-                    showToast('✅ تم حفظ صور البطاقات', 'info');
-                    loadAdminCards();
-                } else {
-                    showToast('❌ فشل حفظ الصور', 'error');
-                }
-            }).catch(() => showToast('❌ حدث خطأ', 'error'));
-        }
-
-        // ============================================================
-        // 18. دوال إدارة الإعدادات
-        // ============================================================
-
-        async function saveAllSettings() {
-            const settings = {};
-            document.querySelectorAll('#settingsContent input[data-key]').forEach(input => {
-                const key = input.dataset.key;
-                if (!key) return;
-                if (input.type === 'checkbox') {
-                    const minInput = document.getElementById('setting_min_deposit');
-                    settings[key] = {
-                        enabled: input.checked,
-                        min_amount: minInput ? parseInt(minInput.value) || 1000 : 1000
-                    };
-                } else if (input.type === 'url' || input.type === 'text') {
-                    settings[key] = { url: input.value || '' };
-                } else if (input.type === 'number') {
-                    settings[key] = { value: parseInt(input.value) || 0 };
-                }
-            });
-
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/settings/batch`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, settings })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('✅ تم حفظ جميع الإعدادات', 'info');
-                    loadAdminSettings();
-                    // تحديث الواجهة الرئيسية
-                    if (settings.game_title?.url) {
-                        document.getElementById('gameTitle').textContent = settings.game_title.url;
-                    }
-                } else {
-                    showToast('❌ فشل حفظ الإعدادات', 'error');
-                }
-            } catch (e) {
-                showToast('❌ حدث خطأ في الحفظ', 'error');
-            }
-        }
-
-        // ============================================================
-        // 19. دوال إدارة اللاعبين
-        // ============================================================
-
-        async function addDeposit() {
-            const targetUserId = document.getElementById('depositUserId')?.value?.trim();
-            const amount = parseFloat(document.getElementById('depositAmount')?.value);
-
-            if (!targetUserId || !amount || amount <= 0) {
-                showToast('❌ بيانات غير صحيحة', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${SERVER_URL}/api/admin/deposit`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, targetUserId, amount })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast(`✅ تم إضافة ${amount} SYP للمستخدم ${targetUserId}`, 'info');
-                    document.getElementById('depositUserId').value = '';
-                    document.getElementById('depositAmount').value = '';
-                    loadAdminPlayers();
-                } else {
-                    showToast('❌ فشل إضافة الإيداع', 'error');
-                }
-            } catch (e) {
-                showToast('❌ حدث خطأ', 'error');
-            }
-        }
-
-        // ============================================================
-        // 20. فتح وإغلاق لوحة الإدارة
+        // 16. فتح وإغلاق لوحة الإدارة
         // ============================================================
 
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             panel.classList.toggle('open');
             if (panel.classList.contains('open')) {
-                // تحميل التبويب النشط
-                const activeTab = document.querySelector('.admin-tab.active');
-                if (activeTab) {
-                    switchAdminTab(activeTab.dataset.tab);
-                } else {
-                    switchAdminTab('dashboard');
-                }
+                loadAdminDashboard();
             }
         }
 
@@ -3049,38 +2428,21 @@
         }
 
         // ============================================================
-        // 21. تهيئة الصفحة
+        // 17. تهيئة الصفحة
         // ============================================================
 
         document.addEventListener('DOMContentLoaded', () => {
-            // زر الإدارة
             document.getElementById('adminToggle').addEventListener('click', toggleAdminPanel);
-
-            // زر بدء اللعبة
             document.getElementById('startGameBtn').addEventListener('click', startGame);
-
-            // تبويبات الإدارة
-            document.querySelectorAll('.admin-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    switchAdminTab(tab.dataset.tab);
-                });
-            });
-
-            // تهيئة الصوت
             initAudio();
-
-            // بدء التحميل والاتصال
             showLoading();
             connectSocket();
         });
 
-        // تحديث دوري للبيانات
+        // تحديث دوري
         setInterval(() => {
             if (isAdmin && document.getElementById('adminPanel').classList.contains('open')) {
-                const activeTab = document.querySelector('.admin-tab.active');
-                if (activeTab) {
-                    switchAdminTab(activeTab.dataset.tab);
-                }
+                loadAdminDashboard();
             }
         }, 30000);
 
@@ -3088,7 +2450,7 @@
             if (socket && !socket.connected) socket.connect();
         }, 10000);
 
-        console.log('🎰 جاك بوت - النسخة النهائية مع الإدارة التفصيلية');
+        console.log('🎰 جاك بوت - النسخة النهائية مع جميع الإصلاحات');
         console.log(`👤 المستخدم: ${userId} | 👑 مدير: ${isAdmin}`);
         console.log(`🔗 الخادم: ${SERVER_URL}`);
     </script>
