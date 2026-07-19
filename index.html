@@ -1478,7 +1478,7 @@
             updateLoading(50, '🔄 جاري الاتصال بالخادم...');
             showStatus('🔄 جاري الاتصال بالخادم...', 'info');
 
-            socket = io(window.location.origin, {
+            socket = io('https://kro-7yvq.onrender.com', {
                 transports: ['websocket', 'polling'],
                 reconnection: true,
                 reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
