@@ -8,9 +8,8 @@
     </script>
     <style>
         /* ============================================================
-               التصميم النهائي للعبة - مستوى AAA
-               تم تحسين كل شيء للأداء والجماليات
-               ============================================================ */
+           التصميم الجديد - الألوان: أصفر، أبيض، أسود، أحمر متدرج
+           ============================================================ */
 
         * {
             margin: 0;
@@ -21,23 +20,26 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
         :root {
-            --primary: #00ffff;
-            --secondary: #ff00ff;
-            --accent: #ffd700;
-            --bg-dark: #0a0a1a;
-            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            --gold: #FFD700;
+            --gold-dark: #DAA520;
+            --gold-light: #FFE44D;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --dark-gray: #1A1A1A;
+            --red-gradient-start: #DC143C;
+            --red-gradient-end: #8B0000;
+            --shadow-gold: 0 0 40px rgba(255, 215, 0, 0.2);
             --transition-smooth: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* --- إعادة تعيين وتحسينات الأداء --- */
         html,
         body {
             width: 100%;
             height: 100%;
             overflow: hidden;
             font-family: 'Orbitron', sans-serif;
-            background: #0a0a1a;
-            color: #fff;
+            background: var(--black);
+            color: var(--white);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             user-select: none;
@@ -45,7 +47,7 @@
             touch-action: manipulation;
         }
 
-        /* --- خلفية اللعبة المتطورة (قابلة للتخصيص) --- */
+        /* --- خلفية سوداء مع تدرج أحمر وأصفر --- */
         #gameBackground {
             position: fixed;
             top: 0;
@@ -54,16 +56,16 @@
             height: 100%;
             z-index: 0;
             background:
-                radial-gradient(ellipse at 20% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 50%, rgba(255, 0, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 100%, rgba(0, 100, 255, 0.05) 0%, transparent 50%),
-                #0a0a1a;
+                radial-gradient(ellipse at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(220, 20, 60, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                var(--black);
             background-size: cover;
             background-position: center;
             transition: background-image 0.8s var(--transition-smooth);
         }
 
-        /* --- طبقة شبكية متحركة --- */
+        /* --- شبكة ذهبية متحركة --- */
         .bg-grid-overlay {
             position: absolute;
             top: -50%;
@@ -71,8 +73,8 @@
             width: 200%;
             height: 200%;
             background-image:
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255, 215, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
             background-size: 80px 80px;
             animation: gridMove 30s linear infinite;
             pointer-events: none;
@@ -88,7 +90,48 @@
             }
         }
 
-        /* --- شاشة التحميل الاحترافية --- */
+        /* --- جزيئات ذهبية متطايرة --- */
+        .gold-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .gold-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--gold), 0 0 20px rgba(255, 215, 0, 0.2);
+            animation: floatParticle linear infinite;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* --- شاشة التحميل --- */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -96,7 +139,7 @@
             width: 100%;
             height: 100%;
             z-index: 1000;
-            background: #0a0a1a;
+            background: var(--black);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -110,69 +153,45 @@
             pointer-events: none;
         }
 
-        #loadingScreen .loading-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.4;
-            filter: blur(2px);
-        }
-
-        .loading-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            text-align: center;
-        }
-
         .loading-title {
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            background: linear-gradient(45deg, var(--gold), var(--gold-light), var(--gold-dark), var(--gold));
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: loadingTitleGlow 2s ease-in-out infinite alternate;
-            margin-bottom: 20px;
-            text-shadow: 0 0 80px rgba(0, 255, 255, 0.2);
+            margin-bottom: 25px;
+            text-shadow: 0 0 80px rgba(255, 215, 0, 0.1);
             letter-spacing: 6px;
         }
 
         @keyframes loadingTitleGlow {
             0% {
                 background-position: 0% 50%;
-                filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.2));
+                filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.1));
             }
             100% {
                 background-position: 100% 50%;
-                filter: drop-shadow(0 0 60px rgba(255, 0, 255, 0.3));
+                filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.2));
             }
         }
 
         .loading-bar-container {
-            width: min(600px, 85vw);
+            width: min(500px, 80vw);
             height: 8px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 4px;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.05);
         }
 
         .loading-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold-dark));
             background-size: 300% 100%;
             border-radius: 4px;
             transition: width 0.8s var(--transition-smooth);
@@ -186,7 +205,7 @@
             right: 0;
             width: 30px;
             height: calc(100% + 4px);
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.3);
             filter: blur(8px);
             animation: barGlow 1s ease-in-out infinite alternate;
         }
@@ -205,17 +224,17 @@
         .loading-percent {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--gold);
             margin-top: 20px;
             letter-spacing: 6px;
-            text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
             transition: all 0.3s ease;
             font-variant-numeric: tabular-nums;
         }
 
         .loading-text {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.3);
             letter-spacing: 8px;
             text-transform: uppercase;
             margin-top: 10px;
@@ -225,10 +244,10 @@
         @keyframes loadingTextPulse {
             0%,
             100% {
-                opacity: 0.4;
+                opacity: 0.3;
             }
             50% {
-                opacity: 1;
+                opacity: 0.8;
             }
         }
 
@@ -242,8 +261,8 @@
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 255, 255, 0.1);
+            background: rgba(255, 215, 0, 0.03);
+            border: 1px solid rgba(255, 215, 0, 0.1);
             animation: dotBounce 1.5s ease-in-out infinite;
             will-change: transform, background, box-shadow;
         }
@@ -264,17 +283,17 @@
             100% {
                 transform: scale(0.6);
                 opacity: 0.3;
-                background: rgba(255, 255, 255, 0.03);
+                background: rgba(255, 215, 0, 0.03);
             }
             40% {
                 transform: scale(1.2);
                 opacity: 1;
-                background: var(--primary);
-                box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+                background: var(--gold);
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
             }
         }
 
-        /* --- الهيدر المتطور --- */
+        /* --- الهيدر --- */
         .header {
             position: fixed;
             top: 0;
@@ -284,19 +303,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
             transition: all 0.3s var(--transition-smooth);
-            min-height: 60px;
+            min-height: 55px;
         }
 
         .header-title {
             font-size: clamp(1rem, 2.5vw, 1.4rem);
             font-weight: 900;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
@@ -304,58 +323,58 @@
 
         .header-info {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
         .header-stat {
             text-align: center;
-            padding: 4px 12px;
-            background: rgba(0, 255, 255, 0.03);
+            padding: 3px 10px;
+            background: rgba(255, 215, 0, 0.03);
             border-radius: 8px;
-            border: 1px solid rgba(0, 255, 255, 0.03);
+            border: 1px solid rgba(255, 215, 0, 0.05);
             transition: all 0.3s ease;
         }
 
         .header-stat .value {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--gold);
             font-variant-numeric: tabular-nums;
         }
 
         .header-stat .label {
-            font-size: 0.45rem;
-            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.4rem;
+            color: rgba(255, 255, 255, 0.2);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .user-badge {
-            padding: 5px 16px;
+            padding: 4px 14px;
             border-radius: 20px;
-            font-size: 0.6rem;
-            background: rgba(0, 255, 255, 0.06);
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            color: var(--primary);
+            font-size: 0.55rem;
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            color: var(--gold);
             transition: all 0.3s ease;
             white-space: nowrap;
         }
 
         .user-badge.admin {
-            background: rgba(255, 0, 255, 0.08);
-            border-color: rgba(255, 0, 255, 0.15);
-            color: var(--secondary);
+            background: rgba(220, 20, 60, 0.08);
+            border-color: rgba(220, 20, 60, 0.15);
+            color: #DC143C;
         }
 
         .admin-toggle {
-            padding: 5px 14px;
-            border: 1px solid rgba(255, 0, 255, 0.2);
+            padding: 4px 12px;
+            border: 1px solid rgba(220, 20, 60, 0.2);
             border-radius: 20px;
-            background: rgba(255, 0, 255, 0.05);
-            color: var(--secondary);
+            background: rgba(220, 20, 60, 0.05);
+            color: #DC143C;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             cursor: pointer;
             transition: all 0.3s var(--transition-smooth);
             text-transform: uppercase;
@@ -364,12 +383,12 @@
         }
 
         .admin-toggle:hover {
-            background: rgba(255, 0, 255, 0.12);
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.1);
+            background: rgba(220, 20, 60, 0.12);
+            box-shadow: 0 0 25px rgba(220, 20, 60, 0.1);
             transform: scale(1.02);
         }
 
-        /* --- مؤقت الإنتظار (Cooldown) --- */
+        /* --- مؤقت الإنتظار --- */
         .cooldown-overlay {
             position: fixed;
             top: 0;
@@ -377,7 +396,7 @@
             width: 100%;
             height: 100%;
             z-index: 50;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             display: none;
@@ -404,19 +423,19 @@
 
         .cooldown-content {
             text-align: center;
-            padding: 45px;
+            padding: 40px;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            border-radius: 25px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             max-width: 90%;
-            width: 450px;
+            width: 420px;
         }
 
         .cooldown-content .icon {
-            font-size: 4.5rem;
-            margin-bottom: 15px;
+            font-size: 4rem;
+            margin-bottom: 12px;
             animation: iconFloat 3s ease-in-out infinite;
         }
 
@@ -431,31 +450,31 @@
         }
 
         .cooldown-content .title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--gold);
             margin-bottom: 8px;
         }
 
         .cooldown-content .subtitle {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 18px;
         }
 
         .cooldown-content .timer {
-            font-size: 4rem;
+            font-size: 3.8rem;
             font-weight: 900;
-            color: var(--primary);
-            text-shadow: 0 0 60px rgba(0, 255, 255, 0.2);
+            color: var(--gold);
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
             font-variant-numeric: tabular-nums;
             letter-spacing: 4px;
         }
 
-        /* --- منطقة اللعبة الرئيسية --- */
+        /* --- منطقة اللعبة --- */
         #gameArea {
             position: fixed;
-            top: 70px;
+            top: 65px;
             left: 0;
             right: 0;
             bottom: 0;
@@ -463,7 +482,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             z-index: 10;
         }
 
@@ -485,20 +504,20 @@
 
         .game-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             width: 100%;
         }
 
         .game-header .prize-display {
-            font-size: clamp(0.8rem, 1.2vw, 1.1rem);
-            color: rgba(255, 255, 255, 0.4);
+            font-size: clamp(0.75rem, 1.2vw, 1rem);
+            color: rgba(255, 255, 255, 0.3);
             letter-spacing: 3px;
         }
 
         .game-header .prize-display .highlight {
-            color: var(--accent);
+            color: var(--gold);
             font-weight: 700;
-            font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
             animation: highlightPulse 1.5s ease-in-out infinite alternate;
         }
 
@@ -516,13 +535,13 @@
         .attempts-display {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-top: 14px;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .attempt-dot {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.03);
             border: 2px solid rgba(255, 255, 255, 0.05);
@@ -531,16 +550,16 @@
         }
 
         .attempt-dot.used {
-            background: rgba(255, 68, 102, 0.25);
-            border-color: #ff4466;
-            box-shadow: 0 0 25px rgba(255, 68, 102, 0.1);
+            background: rgba(220, 20, 60, 0.2);
+            border-color: #DC143C;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.1);
             transform: scale(0.8);
         }
 
         .attempt-dot.active {
-            background: rgba(0, 255, 255, 0.15);
-            border-color: var(--primary);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+            background: rgba(255, 215, 0, 0.15);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
             animation: dotActive 1s ease-in-out infinite alternate;
         }
 
@@ -553,15 +572,15 @@
             }
         }
 
-        /* --- شبكة البطاقات - تصميم احترافي 3D --- */
+        /* --- البطاقات --- */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: clamp(12px, 1.8vw, 22px);
+            gap: clamp(10px, 1.5vw, 18px);
             perspective: 2500px;
-            max-width: 780px;
+            max-width: 720px;
             width: 100%;
-            padding: 8px;
+            padding: 5px;
         }
 
         .card-container {
@@ -574,8 +593,8 @@
         }
 
         .card-container:hover:not(.disabled) .card:not(.flipped) {
-            transform: rotateY(18deg) rotateX(10deg) scale(1.04);
-            filter: brightness(1.15);
+            transform: rotateY(15deg) rotateX(8deg) scale(1.04);
+            filter: brightness(1.1);
         }
 
         .card {
@@ -584,7 +603,7 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.7s var(--transition-smooth);
-            border-radius: clamp(12px, 1.8vw, 18px);
+            border-radius: clamp(10px, 1.5vw, 16px);
             will-change: transform;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
@@ -603,13 +622,13 @@
                 transform: rotateY(180deg) scale(1);
             }
             25% {
-                transform: rotateY(180deg) scale(1.25) rotate(8deg);
+                transform: rotateY(180deg) scale(1.2) rotate(6deg);
             }
             50% {
-                transform: rotateY(180deg) scale(0.92) rotate(-5deg);
+                transform: rotateY(180deg) scale(0.95) rotate(-4deg);
             }
             75% {
-                transform: rotateY(180deg) scale(1.08) rotate(3deg);
+                transform: rotateY(180deg) scale(1.06) rotate(2deg);
             }
             100% {
                 transform: rotateY(180deg) scale(1);
@@ -621,20 +640,20 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: clamp(12px, 1.8vw, 18px);
+            border-radius: clamp(10px, 1.5vw, 16px);
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            box-shadow: var(--card-shadow);
-            border: 2px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 215, 0, 0.05);
         }
 
-        /* --- الوجه الخلفي (ظهر البطاقة) مع نيران زرقاء --- */
+        /* الوجه الخلفي */
         .card-back {
-            background: linear-gradient(145deg, #0a1a2a, #02080e);
+            background: linear-gradient(145deg, #1a0a0a, #0a0a0a);
             transform: rotateY(0deg);
-            border-color: rgba(0, 255, 255, 0.08);
+            border-color: rgba(255, 215, 0, 0.08);
             position: relative;
             padding: 4px;
         }
@@ -643,7 +662,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: clamp(10px, 1.5vw, 16px);
+            border-radius: clamp(8px, 1.2vw, 14px);
             display: block;
         }
 
@@ -654,8 +673,8 @@
             left: -3px;
             right: -3px;
             bottom: -3px;
-            border-radius: clamp(15px, 2.2vw, 21px);
-            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.5), transparent, rgba(168, 85, 247, 0.5), transparent);
+            border-radius: clamp(13px, 1.8vw, 19px);
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.3), transparent, rgba(220, 20, 60, 0.3), transparent);
             animation: flameSpin 4s linear infinite;
             z-index: -1;
         }
@@ -676,10 +695,9 @@
             width: 100%;
             height: 100%;
             background:
-                radial-gradient(ellipse at 30% 40%, rgba(0, 255, 255, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(0, 200, 255, 0.04) 0%, transparent 40%);
-            border-radius: clamp(12px, 1.8vw, 18px);
+                radial-gradient(ellipse at 30% 40%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(220, 20, 60, 0.06) 0%, transparent 50%);
+            border-radius: clamp(10px, 1.5vw, 16px);
             animation: fireDance 3s ease-in-out infinite alternate;
             pointer-events: none;
         }
@@ -690,12 +708,12 @@
                 transform: scale(1) rotate(-2deg);
             }
             50% {
-                opacity: 0.8;
-                transform: scale(1.05) rotate(2deg);
+                opacity: 0.6;
+                transform: scale(1.04) rotate(2deg);
             }
             100% {
-                opacity: 0.4;
-                transform: scale(1.02) rotate(-1deg);
+                opacity: 0.3;
+                transform: scale(1.01) rotate(-1deg);
             }
         }
 
@@ -704,28 +722,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(2.2rem, 4.5vw, 4rem);
+            font-size: clamp(2rem, 4vw, 3.5rem);
             z-index: 2;
-            text-shadow: 0 0 60px rgba(0, 255, 255, 0.15);
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
             animation: iconFloat 3s ease-in-out infinite;
             pointer-events: none;
         }
 
-        @keyframes iconFloat {
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -55%) scale(1.06);
-            }
-        }
-
-        /* --- الوجه الأمامي (رمز البطاقة) --- */
+        /* الوجه الأمامي */
         .card-front {
             transform: rotateY(180deg);
-            background: linear-gradient(145deg, rgba(10, 30, 50, 0.95), rgba(5, 15, 30, 0.95));
-            border-color: rgba(255, 255, 255, 0.03);
+            background: linear-gradient(145deg, rgba(20, 10, 10, 0.95), rgba(5, 5, 5, 0.95));
+            border-color: rgba(255, 215, 0, 0.03);
             padding: 12%;
         }
 
@@ -733,7 +741,7 @@
             width: 80%;
             height: 80%;
             object-fit: contain;
-            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.05));
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.05));
             animation: symbolPulse 2.5s ease-in-out infinite alternate;
             will-change: transform;
         }
@@ -743,14 +751,15 @@
                 transform: scale(1) rotate(0deg);
             }
             100% {
-                transform: scale(1.06) rotate(4deg);
+                transform: scale(1.06) rotate(3deg);
             }
         }
 
         .card-front .symbol-text {
-            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 900;
-            text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
+            color: var(--gold);
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.05);
         }
 
         .card-container.disabled {
@@ -763,7 +772,7 @@
             transform: scale(0.95);
         }
 
-        /* --- تأثيرات الفوز الاحترافية --- */
+        /* --- تأثير الفوز --- */
         .win-overlay {
             position: fixed;
             top: 0;
@@ -791,7 +800,7 @@
             }
         }
 
-        /* --- نافذة النتيجة المتطورة --- */
+        /* --- نافذة النتيجة --- */
         #resultModal {
             position: fixed;
             top: 0;
@@ -799,7 +808,7 @@
             width: 100%;
             height: 100%;
             z-index: 300;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             display: none;
@@ -815,7 +824,7 @@
         @keyframes modalIn {
             from {
                 opacity: 0;
-                transform: scale(0.85) rotateY(15deg);
+                transform: scale(0.85) rotateY(10deg);
             }
             to {
                 opacity: 1;
@@ -824,12 +833,12 @@
         }
 
         .modal-content {
-            background: linear-gradient(145deg, rgba(10, 20, 45, 0.95), rgba(5, 10, 20, 0.95));
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-            padding: clamp(30px, 5vw, 55px);
+            background: linear-gradient(145deg, rgba(10, 10, 10, 0.95), rgba(0, 0, 0, 0.95));
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            border-radius: 25px;
+            padding: clamp(25px, 4vw, 45px);
             text-align: center;
-            max-width: 520px;
+            max-width: 480px;
             width: 90%;
             position: relative;
             overflow: hidden;
@@ -843,7 +852,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.04), transparent, rgba(255, 0, 255, 0.04), transparent);
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(220, 20, 60, 0.03), transparent);
             animation: modalSpin 12s linear infinite;
             z-index: 0;
         }
@@ -863,13 +872,13 @@
         }
 
         .modal-title {
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .modal-title.win {
-            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: winTitlePulse 1s ease-in-out infinite alternate;
@@ -882,29 +891,29 @@
             }
             100% {
                 transform: scale(1.05);
-                filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.5));
+                filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.4));
             }
         }
 
         .modal-title.lose {
-            color: #ff4466;
+            color: #DC143C;
             animation: loseTitlePulse 1s ease-in-out infinite alternate;
         }
 
         @keyframes loseTitlePulse {
             0% {
                 transform: scale(1);
-                text-shadow: 0 0 30px rgba(255, 68, 102, 0.2);
+                text-shadow: 0 0 30px rgba(220, 20, 60, 0.2);
             }
             100% {
                 transform: scale(0.96);
-                text-shadow: 0 0 60px rgba(255, 68, 102, 0.1);
+                text-shadow: 0 0 60px rgba(220, 20, 60, 0.1);
             }
         }
 
         .modal-prize {
-            font-size: clamp(4rem, 8vw, 6rem);
-            margin: 15px 0;
+            font-size: clamp(3.5rem, 7vw, 5.5rem);
+            margin: 12px 0;
             animation: prizeFloat 2.5s ease-in-out infinite alternate;
         }
 
@@ -913,14 +922,14 @@
                 transform: translateY(0) scale(1);
             }
             100% {
-                transform: translateY(-12px) scale(1.06);
+                transform: translateY(-10px) scale(1.05);
             }
         }
 
         .modal-prize-value {
-            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
             font-weight: 700;
-            color: var(--accent);
+            color: var(--gold);
             animation: valuePulse 1.5s ease-in-out infinite alternate;
         }
 
@@ -931,76 +940,38 @@
             }
             100% {
                 transform: scale(1.05);
-                text-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+                text-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
             }
         }
 
         .modal-detail {
-            margin: 12px 0;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.85rem;
+            margin: 10px 0;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.8rem;
             letter-spacing: 1px;
         }
 
-        .modal-btn {
-            padding: 14px 40px;
+        /* --- زر البدء --- */
+        .btn-start {
+            position: fixed;
+            bottom: clamp(20px, 3vh, 40px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            padding: 16px 45px;
             border: none;
             border-radius: 60px;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-size: clamp(0.8rem, 1.2vw, 1rem);
+            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
             cursor: pointer;
-            background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent));
-            background-size: 300% 300%;
-            color: #0a0a1a;
+            background: linear-gradient(45deg, var(--gold-dark), var(--gold), var(--gold-light));
+            background-size: 200% 200%;
+            color: var(--black);
             transition: all 0.3s var(--transition-smooth);
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-top: 20px;
-            animation: btnGradient 2.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes btnGradient {
-            0% {
-                background-position: 0% 50%;
-                box-shadow: 0 10px 40px rgba(0, 255, 255, 0.1);
-            }
-            100% {
-                background-position: 100% 50%;
-                box-shadow: 0 10px 60px rgba(255, 0, 255, 0.2);
-            }
-        }
-
-        .modal-btn:hover {
-            transform: scale(1.05) translateY(-3px);
-            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.2);
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* --- زر البدء المتطور --- */
-        .btn-start {
-            position: fixed;
-            bottom: clamp(25px, 4vh, 50px);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-            padding: 18px 55px;
-            border: none;
-            border-radius: 70px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: clamp(1rem, 1.5vw, 1.2rem);
-            cursor: pointer;
-            background: linear-gradient(45deg, var(--secondary), var(--primary), var(--accent));
-            background-size: 300% 300%;
-            color: #0a0a1a;
-            transition: all 0.3s var(--transition-smooth);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            box-shadow: 0 10px 50px rgba(0, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.15);
             display: none;
             animation: btnStartPulse 2s ease-in-out infinite alternate;
             white-space: nowrap;
@@ -1009,96 +980,69 @@
         @keyframes btnStartPulse {
             0% {
                 background-position: 0% 50%;
-                box-shadow: 0 10px 50px rgba(0, 255, 255, 0.1);
+                box-shadow: 0 10px 40px rgba(255, 215, 0, 0.1);
             }
             100% {
                 background-position: 100% 50%;
-                box-shadow: 0 15px 70px rgba(255, 0, 255, 0.2);
+                box-shadow: 0 15px 60px rgba(255, 215, 0, 0.2);
             }
         }
 
         .btn-start:hover {
-            transform: translateX(-50%) scale(1.06) translateY(-4px);
-            box-shadow: 0 20px 70px rgba(0, 255, 255, 0.25);
+            transform: translateX(-50%) scale(1.05) translateY(-3px);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25);
         }
 
         .btn-start:active {
             transform: translateX(-50%) scale(0.95);
         }
 
-        /* --- لوحة الإدارة المنبثقة (للمشرف فقط) --- */
-        #adminPanel {
+        /* --- زر ملء الشاشة --- */
+        .fullscreen-btn {
             position: fixed;
-            top: 65px;
-            right: -420px;
-            width: 400px;
-            max-width: 90vw;
-            height: calc(100vh - 65px);
-            z-index: 150;
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 25px 20px;
-            overflow-y: auto;
-            transition: right 0.5s var(--transition-smooth);
-        }
-
-        #adminPanel.open {
-            right: 0;
-        }
-
-        #adminPanel::-webkit-scrollbar {
-            width: 4px;
-        }
-        #adminPanel::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        #adminPanel::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        .admin-panel-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--secondary);
-            margin-bottom: 20px;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-
-        .admin-close {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 1.6rem;
+            bottom: clamp(75px, 8vh, 100px);
+            right: 15px;
+            z-index: 15;
+            background: rgba(255, 215, 0, 0.03);
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s var(--transition-smooth);
-            padding: 5px 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
-        .admin-close:hover {
-            color: #fff;
-            transform: rotate(90deg);
+        .fullscreen-btn:hover {
+            background: rgba(255, 215, 0, 0.05);
+            color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        @media (display-mode: fullscreen) {
+            .fullscreen-btn {
+                display: flex;
+            }
         }
 
         /* --- رسائل التنبيه --- */
         .error-toast {
             position: fixed;
-            bottom: clamp(90px, 12vh, 130px);
+            bottom: clamp(80px, 10vh, 110px);
             left: 50%;
             transform: translateX(-50%);
             z-index: 50;
-            padding: 14px 28px;
-            background: rgba(255, 68, 102, 0.08);
-            border: 1px solid rgba(255, 68, 102, 0.15);
-            border-radius: 14px;
-            color: #ff4466;
-            font-size: 0.85rem;
+            padding: 12px 22px;
+            background: rgba(220, 20, 60, 0.08);
+            border: 1px solid rgba(220, 20, 60, 0.12);
+            border-radius: 12px;
+            color: #DC143C;
+            font-size: 0.8rem;
             display: none;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -1113,14 +1057,14 @@
         }
 
         .error-toast.info {
-            border-color: rgba(0, 255, 255, 0.15);
-            color: var(--primary);
+            border-color: rgba(255, 215, 0, 0.12);
+            color: var(--gold);
         }
 
         @keyframes toastIn {
             from {
                 opacity: 0;
-                transform: translateX(-50%) translateY(25px) scale(0.95);
+                transform: translateX(-50%) translateY(20px) scale(0.95);
             }
             to {
                 opacity: 1;
@@ -1128,7 +1072,7 @@
             }
         }
 
-        /* --- مؤثرات النثار الاحترافية --- */
+        /* --- النثار --- */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -1142,8 +1086,8 @@
 
         .confetti-piece {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             top: -15px;
             animation: confettiFall linear forwards;
             will-change: transform, opacity;
@@ -1156,183 +1100,201 @@
             }
             10% {
                 opacity: 1;
-                transform: translateY(10vh) rotate(180deg) scale(1.2) skewX(12deg);
+                transform: translateY(10vh) rotate(180deg) scale(1.1) skewX(10deg);
             }
             90% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(110vh) rotate(720deg) scale(0.4) skewX(-12deg);
+                transform: translateY(110vh) rotate(720deg) scale(0.4) skewX(-10deg);
                 opacity: 0;
             }
         }
 
-        /* --- زر ملء الشاشة --- */
-        .fullscreen-btn {
+        /* --- لوحة الإدارة --- */
+        #adminPanel {
             position: fixed;
-            bottom: clamp(80px, 10vh, 110px);
-            right: 20px;
-            z-index: 15;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            color: rgba(255, 255, 255, 0.2);
+            top: 60px;
+            right: -380px;
+            width: 360px;
+            max-width: 90vw;
+            height: calc(100vh - 60px);
+            z-index: 150;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid rgba(255, 215, 0, 0.05);
+            padding: 20px 15px;
+            overflow-y: auto;
+            transition: right 0.5s var(--transition-smooth);
+        }
+
+        #adminPanel.open {
+            right: 0;
+        }
+
+        #adminPanel::-webkit-scrollbar {
+            width: 3px;
+        }
+        #adminPanel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #adminPanel::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 2px;
+        }
+
+        .admin-panel-title {
             font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .admin-close {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s var(--transition-smooth);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
+            padding: 5px 10px;
         }
 
-        .fullscreen-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            transform: scale(1.05);
+        .admin-close:hover {
+            color: var(--gold);
+            transform: rotate(90deg);
         }
 
-        @media (display-mode: fullscreen) {
-            .fullscreen-btn {
-                display: flex;
-            }
-        }
-
-        /* --- تحسينات للشاشات الصغيرة والمتوسطة --- */
+        /* --- تحسينات للشاشات الصغيرة --- */
         @media (max-width: 768px) {
             #adminPanel {
                 width: 100%;
                 right: -100%;
-                top: 60px;
-                height: calc(100vh - 60px);
-                padding: 20px 15px;
+                top: 55px;
+                height: calc(100vh - 55px);
+                padding: 15px;
             }
 
             .cards-grid {
-                gap: 10px;
+                gap: 8px;
                 padding: 4px;
             }
 
             .header {
                 padding: 8px 15px;
-                min-height: 55px;
+                min-height: 50px;
             }
 
             .header-title {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
 
             .btn-start {
-                padding: 15px 30px;
-                font-size: 0.85rem;
-                bottom: 20px;
+                padding: 14px 28px;
+                font-size: 0.8rem;
+                bottom: 15px;
             }
 
             .cooldown-content {
-                padding: 30px 20px;
+                padding: 25px 18px;
             }
 
             .cooldown-content .timer {
-                font-size: 3rem;
+                font-size: 2.8rem;
             }
 
             .modal-content {
-                padding: 25px 20px;
+                padding: 22px 16px;
             }
 
             .fullscreen-btn {
-                width: 38px;
-                height: 38px;
+                width: 36px;
+                height: 36px;
                 font-size: 1rem;
-                bottom: 75px;
-                right: 15px;
+                bottom: 70px;
+                right: 12px;
             }
 
             .error-toast {
-                font-size: 0.75rem;
-                padding: 10px 18px;
-                bottom: 75px;
+                font-size: 0.7rem;
+                padding: 10px 16px;
+                bottom: 70px;
             }
         }
 
         @media (max-width: 480px) {
             .cards-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
+                gap: 6px;
             }
 
             .card-front .symbol-text {
-                font-size: 2.2rem;
-            }
-
-            .header-stat .value {
-                font-size: 0.75rem;
-            }
-            .header-stat .label {
-                font-size: 0.4rem;
-            }
-
-            .btn-start {
-                padding: 12px 25px;
-                font-size: 0.75rem;
-                letter-spacing: 2px;
-                bottom: 15px;
-            }
-
-            .cooldown-content .timer {
-                font-size: 2.5rem;
-            }
-
-            .cooldown-content .title {
-                font-size: 1.2rem;
-            }
-
-            .loading-title {
                 font-size: 2rem;
             }
 
-            .loading-bar-container {
-                width: 90vw;
+            .header-stat .value {
+                font-size: 0.7rem;
+            }
+            .header-stat .label {
+                font-size: 0.35rem;
+            }
+
+            .btn-start {
+                padding: 12px 22px;
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                bottom: 12px;
+            }
+
+            .cooldown-content .timer {
+                font-size: 2.2rem;
+            }
+
+            .cooldown-content .title {
+                font-size: 1.1rem;
+            }
+
+            .loading-title {
+                font-size: 1.8rem;
             }
 
             .modal-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
             .modal-prize {
-                font-size: 3.5rem;
+                font-size: 3rem;
             }
             .modal-prize-value {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
 
             .user-badge {
-                font-size: 0.5rem;
+                font-size: 0.45rem;
                 padding: 3px 10px;
             }
             .admin-toggle {
-                font-size: 0.45rem;
-                padding: 3px 10px;
+                font-size: 0.4rem;
+                padding: 3px 8px;
             }
         }
 
         @media (max-width: 360px) {
             .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 5px;
+                gap: 4px;
             }
 
             .card-front .symbol-text {
-                font-size: 1.6rem;
-            }
-
-            .card-face {
-                border-width: 1px;
+                font-size: 1.5rem;
             }
 
             .header-title {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
 
             .header-stat {
@@ -1343,15 +1305,13 @@
             }
         }
 
-        /* --- تحسينات للشاشات الكبيرة --- */
         @media (min-width: 1200px) {
             .cards-grid {
-                gap: 22px;
-                max-width: 850px;
+                gap: 20px;
+                max-width: 800px;
             }
-
             .card-front .symbol-text {
-                font-size: 5rem;
+                font-size: 4.5rem;
             }
         }
 
@@ -1364,18 +1324,18 @@
             display: flex !important;
         }
 
-        /* --- تحسينات إضافية للأداء --- */
+        /* --- تحسينات الأداء --- */
         .card,
         .card-face,
         .card-back-image,
         .card-symbol-image,
         .loading-bar,
         .confetti-piece,
-        .particle-smooth {
+        .gold-particle {
             will-change: transform, opacity;
         }
 
-        /* --- منع التحديد والنسخ --- */
+        /* --- منع التحديد --- */
         .card-container,
         .btn-start,
         .modal-btn,
@@ -1387,39 +1347,40 @@
 <body>
 
     <!-- ============================================================
-    خلفية اللعبة (قابلة للتخصيص من المدير)
+    الخلفية
     ============================================================ -->
     <div id="gameBackground">
         <div class="bg-grid-overlay"></div>
     </div>
 
     <!-- ============================================================
-    شاشة التحميل الاحترافية
+    جزيئات ذهبية
+    ============================================================ -->
+    <div class="gold-particles" id="goldParticles"></div>
+
+    <!-- ============================================================
+    شاشة التحميل
     ============================================================ -->
     <div id="loadingScreen">
-        <img id="loadingBgImage" class="loading-bg" src="https://i.imgur.com/placeholder.jpg" alt="Loading Background">
-        <div class="loading-content">
-            <div class="loading-title">🎰 جاك بوت</div>
-            <div class="loading-bar-container">
-                <div class="loading-bar" id="loadingBar"></div>
-            </div>
-            <div class="loading-percent" id="loadingPercent">0%</div>
-            <div class="loading-text" id="loadingText">جاري تحميل العالم</div>
-            <div class="loading-dots">
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-            </div>
+        <div class="loading-title">🎰 جاك بوت</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <div class="loading-percent" id="loadingPercent">0%</div>
+        <div class="loading-text" id="loadingText">جاري تحميل العالم</div>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
         </div>
     </div>
 
     <!-- ============================================================
-    الهيدر العلوي
+    الهيدر
     ============================================================ -->
     <header class="header">
         <div class="header-title" id="gameTitle">🎰 جاك بوت</div>
         <div class="header-info">
-            <!-- إحصائيات تظهر للمشرف فقط -->
             <div id="adminStatsHeader" class="admin-only">
                 <div class="header-stat">
                     <div class="value" id="userBalance">0</div>
@@ -1440,7 +1401,7 @@
     </header>
 
     <!-- ============================================================
-    مؤقت الإنتظار (Cooldown)
+    مؤقت الإنتظار
     ============================================================ -->
     <div class="cooldown-overlay" id="cooldownOverlay">
         <div class="cooldown-content">
@@ -1452,7 +1413,7 @@
     </div>
 
     <!-- ============================================================
-    منطقة اللعبة الرئيسية
+    منطقة اللعبة
     ============================================================ -->
     <div id="gameArea">
         <div class="game-header">
@@ -1465,7 +1426,7 @@
     </div>
 
     <!-- ============================================================
-    زر بدء اللعبة
+    زر البدء
     ============================================================ -->
     <button class="btn-start" id="startGameBtn">🚀 ابدأ المغامرة</button>
 
@@ -1498,34 +1459,29 @@
     <div class="error-toast" id="errorToast"></div>
 
     <!-- ============================================================
-    لوحة الإدارة (للمشرف فقط)
+    لوحة الإدارة
     ============================================================ -->
     <div id="adminPanel">
         <button class="admin-close" onclick="closeAdminPanel()" aria-label="إغلاق">✕</button>
         <div class="admin-panel-title">⚙️ لوحة التحكم</div>
         <div id="adminContent">
-            <div style="color:rgba(255,255,255,0.25); font-size:0.8rem; text-align:center; padding:30px;">
+            <div style="color:rgba(255,215,0,0.2); font-size:0.8rem; text-align:center; padding:25px;">
                 ⏳ جاري تحميل البيانات...
             </div>
         </div>
     </div>
 
-
     <!-- ============================================================
-    جافا سكريبت - قلب اللعبة النابض
+    جافا سكريبت
     ============================================================ -->
     <script>
         // ============================================================
-        //  1.  المتغيرات العامة وإعدادات الخادم
+        // 1. المتغيرات العامة
         // ============================================================
 
-        // --- رابط الخادم الرئيسي (تم تحديده مباشرة) ---
         const SERVER_URL = 'https://kro-7yvq.onrender.com';
-
-        // --- معرف المدير الثابت ---
         const ADMIN_ID = '7011476249';
 
-        // --- متغيرات حالة اللعبة ---
         let socket = null;
         let userId = '';
         let isGameActive = false;
@@ -1537,13 +1493,33 @@
         const MAX_RECONNECT_ATTEMPTS = 25;
 
         // ============================================================
-        //  2.  نظام الصوت الاحترافي
+        // 2. جزيئات ذهبية
+        // ============================================================
+
+        function createGoldParticles() {
+            const container = document.getElementById('goldParticles');
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'gold-particle';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                particle.style.animationDelay = (Math.random() * 30) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createGoldParticles();
+
+        // ============================================================
+        // 3. نظام الصوت
         // ============================================================
 
         function initAudio() {
             try {
                 audioContext = new(window.AudioContext || window.webkitAudioContext)();
-            } catch (_) { /* تجاهل الأخطاء */ }
+            } catch (_) {}
         }
 
         function playSound(type) {
@@ -1602,16 +1578,17 @@
                         oscillator.stop(audioContext.currentTime + 0.15);
                         break;
                 }
-            } catch (_) { /* تجاهل أخطاء الصوت */ }
+            } catch (_) {}
         }
 
         // ============================================================
-        //  3.  استخراج معرف المستخدم
+        // 4. استخراج معرف المستخدم
         // ============================================================
 
         function getUserIdFromURL() {
             const params = new URLSearchParams(window.location.search);
-            const id = params.get('user');
+            // دعم كلا الصيغتين: user_id و user
+            const id = params.get('user_id') || params.get('user');
             if (id && id.length > 3) return id;
             const saved = localStorage.getItem('jackpot_user_id');
             if (saved && saved.length > 3) return saved;
@@ -1625,7 +1602,7 @@
         localStorage.setItem('jackpot_user_id', userId);
 
         // ============================================================
-        //  4.  شاشة التحميل المتطورة
+        // 5. شاشة التحميل
         // ============================================================
 
         function updateLoading(progress, text) {
@@ -1642,7 +1619,6 @@
         async function showLoading() {
             const screen = document.getElementById('loadingScreen');
             screen.classList.remove('hidden');
-            // محاكاة تقدم سلس وطبيعي
             for (let i = 0; i <= 100; i += 0.8) {
                 updateLoading(i, `جاري تحميل العالم`);
                 await new Promise(r => setTimeout(r, 10 + Math.random() * 12));
@@ -1654,7 +1630,7 @@
         }
 
         // ============================================================
-        //  5.  دوال الشبكة والاتصال بالخادم
+        // 6. دوال الشبكة
         // ============================================================
 
         async function fetchWithTimeout(url, options = {}, timeout = 12000) {
@@ -1691,7 +1667,7 @@
         }
 
         // ============================================================
-        //  6.  الاتصال عبر Socket.IO مع إعادة محاولة قوية
+        // 7. الاتصال بالخادم
         // ============================================================
 
         function connectSocket() {
@@ -1724,12 +1700,12 @@
                 const progress = 50 + Math.min(reconnectAttempts * 2, 30);
                 updateLoading(progress, `⚠️ محاولة ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
                 if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-                    showToast('❌ تعذر الاتصال بالخادم، تأكد من تشغيله', 'error');
+                    showToast('❌ تعذر الاتصال بالخادم', 'error');
                     updateLoading(100, '❌ فشل الاتصال');
                 }
             });
 
-            socket.on('disconnect', (reason) => {
+            socket.on('disconnect', () => {
                 if (isGameActive) {
                     showToast('⚠️ انقطع الاتصال، جاري إعادة المحاولة...', 'info');
                 }
@@ -1742,7 +1718,6 @@
                 authenticateUser();
             });
 
-            // --- مستمعي أحداث اللعبة ---
             socket.on('game_started', handleGameStarted);
             socket.on('card_revealed', handleCardRevealed);
             socket.on('game_won', handleGameWon);
@@ -1750,12 +1725,12 @@
             socket.on('cooldown', handleCooldown);
 
             socket.on('error', (data) => {
-                showToast(data.message || '⚠️ حدث خطأ في الخادم', 'error');
+                showToast(data.message || '⚠️ حدث خطأ', 'error');
             });
         }
 
         // ============================================================
-        //  7.  مصادقة المستخدم وجلب البيانات
+        // 8. مصادقة المستخدم
         // ============================================================
 
         async function authenticateUser() {
@@ -1767,7 +1742,7 @@
                 if (data && data.success) {
                     updateLoading(95, '🌟 مرحباً بك!');
 
-                    // --- تحديث واجهة المستخدم ---
+                    // تحديث الهيدر للمشرف
                     if (isAdmin) {
                         document.getElementById('userBalance').textContent = data.user.stats?.total_prize_value || 0;
                         document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
@@ -1790,10 +1765,10 @@
                         document.getElementById('adminToggle').style.display = 'none';
                     }
 
-                    // --- تحميل الإعدادات ---
+                    // تحميل الإعدادات
                     await loadSettings();
 
-                    // --- التحقق من صلاحية اللعب (Cooldown) ---
+                    // التحقق من صلاحية اللعب (المدير مستثنى)
                     if (data.user.cooldown?.allowed) {
                         document.getElementById('startGameBtn').style.display = 'block';
                     } else if (data.user.cooldown?.remaining) {
@@ -1807,7 +1782,7 @@
                 }
             } catch (error) {
                 updateLoading(90, '⚠️ خطأ في جلب البيانات');
-                showToast(`❌ ${error.message || 'فشل الاتصال بالخادم'}`, 'error');
+                showToast(`❌ ${error.message || 'فشل الاتصال'}`, 'error');
                 setTimeout(() => {
                     if (socket && !socket.connected) socket.connect();
                 }, 5000);
@@ -1815,7 +1790,7 @@
         }
 
         // ============================================================
-        //  8.  تحميل إعدادات اللعبة من الخادم
+        // 9. تحميل الإعدادات
         // ============================================================
 
         async function loadSettings() {
@@ -1824,24 +1799,18 @@
                 if (!response.ok) return;
                 const data = await response.json();
                 if (data && data.success) {
-                    // تحديث الخلفية
                     if (data.settings.background_image?.url) {
                         document.getElementById('gameBackground').style.backgroundImage = `url(${data.settings.background_image.url})`;
                     }
-                    // تحديث صورة خلفية التحميل
-                    if (data.settings.loading_image?.url) {
-                        document.getElementById('loadingBgImage').src = data.settings.loading_image.url;
-                    }
-                    // تحديث عنوان اللعبة
                     if (data.settings.game_title?.text) {
                         document.getElementById('gameTitle').textContent = data.settings.game_title.text;
                     }
                 }
-            } catch (_) { /* تجاهل */ }
+            } catch (_) {}
         }
 
         // ============================================================
-        //  9.  دوال الإشعارات والحالة
+        // 10. دوال الحالة
         // ============================================================
 
         function showToast(message, type = 'error') {
@@ -1853,12 +1822,11 @@
         }
 
         function hideToast() {
-            const el = document.getElementById('errorToast');
-            el.classList.remove('show');
+            document.getElementById('errorToast').classList.remove('show');
         }
 
         // ============================================================
-        //  10. مؤقت الإنتظار (Cooldown)
+        // 11. مؤقت الإنتظار
         // ============================================================
 
         function showCooldown(remainingHours) {
@@ -1893,7 +1861,7 @@
         }
 
         // ============================================================
-        //  11. دوال اللعبة الأساسية
+        // 12. دوال اللعبة
         // ============================================================
 
         function startGame() {
@@ -1920,7 +1888,7 @@
             document.getElementById('grandPrize').textContent =
                 `${data.prize?.prize_icon || '🔥'} ${data.prize?.prize_value || 10000} SYP`;
 
-            // --- عرض نقاط المحاولات ---
+            // عرض نقاط المحاولات
             const attemptsDisplay = document.getElementById('attemptsDisplay');
             attemptsDisplay.innerHTML = '';
             for (let i = 0; i < (data.maxAttempts || 5); i++) {
@@ -1929,11 +1897,11 @@
                 attemptsDisplay.appendChild(dot);
             }
 
-            // --- إنشاء البطاقات ---
+            // إنشاء البطاقات
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
             const cards = data.cards || [];
-            const backImage = data.cardBackImage || 'https://i.imgur.com/cardback.jpg';
+            const backImage = data.cardBackImage || 'https://i.imgur.com/card_back.jpg';
 
             cards.forEach((card, index) => {
                 const container = document.createElement('div');
@@ -1944,7 +1912,6 @@
                 cardEl.className = 'card';
                 cardEl.dataset.index = index;
 
-                // الوجه الخلفي (ظهر البطاقة)
                 const back = document.createElement('div');
                 back.className = 'card-face card-back';
                 back.innerHTML = `
@@ -1953,7 +1920,6 @@
                             <div class="card-icon-overlay">🎰</div>
                         `;
 
-                // الوجه الأمامي (رمز البطاقة)
                 const front = document.createElement('div');
                 front.className = 'card-face card-front';
                 front.innerHTML = `<div class="symbol-text">${card.symbol || '?'}</div>`;
@@ -1992,7 +1958,6 @@
                 front.innerHTML = `<div class="symbol-text">${data.symbol || '?'}</div>`;
             }
 
-            // تحديث نقاط المحاولات
             const dots = document.querySelectorAll('.attempt-dot');
             dots.forEach((dot, i) => {
                 const attempts = data.attempts || 0;
@@ -2007,7 +1972,7 @@
             document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
             playSound('win');
 
-            // --- تأثير الفوز: إخفاء البطاقات غير الرابحة ---
+            // تأثير الفوز: إخفاء البطاقات غير الرابحة
             const matchedIds = (data.matchedCards || []).map(c => c.id);
             const allCards = document.querySelectorAll('.card-container');
             allCards.forEach((container, index) => {
@@ -2021,12 +1986,11 @@
                 } else {
                     const card = container.querySelector('.card');
                     card.classList.add('matched');
-                    container.style.transform = 'translateY(-12px) scale(1.06)';
-                    container.style.boxShadow = '0 25px 70px rgba(255, 215, 0, 0.25)';
+                    container.style.transform = 'translateY(-10px) scale(1.05)';
+                    container.style.boxShadow = '0 20px 60px rgba(255, 215, 0, 0.2)';
                 }
             });
 
-            // --- تأثير الفوز على الشاشة ---
             const overlay = document.getElementById('winOverlay');
             overlay.classList.add('show');
             setTimeout(() => overlay.classList.remove('show'), 600);
@@ -2043,7 +2007,6 @@
             document.getElementById('startGameBtn').textContent = '🔄 العب مجدداً';
             playSound('lose');
 
-            // --- كشف جميع البطاقات ---
             const allCards = data.allCards || [];
             allCards.forEach((c, index) => {
                 const container = document.querySelector(`.card-container[data-index="${c.id}"]`);
@@ -2067,7 +2030,7 @@
         }
 
         // ============================================================
-        //  12. عرض نافذة النتيجة
+        // 13. عرض النتيجة
         // ============================================================
 
         function showResult(isWin, prize, message) {
@@ -2089,7 +2052,6 @@
 
         function closeResult() {
             document.getElementById('resultModal').classList.remove('show');
-            // إعادة تعيين البطاقات
             document.querySelectorAll('.card-container').forEach(container => {
                 container.style.opacity = '1';
                 container.style.transform = '';
@@ -2099,7 +2061,7 @@
         }
 
         // ============================================================
-        //  13. تحديث إحصائيات المستخدم
+        // 14. تحديث الإحصائيات
         // ============================================================
 
         async function updateUserStats() {
@@ -2110,12 +2072,12 @@
                     document.getElementById('userPlays').textContent = data.user.stats?.total_plays || 0;
                     document.getElementById('userWins').textContent = data.user.stats?.total_wins || 0;
                 }
-            } catch (_) { /* تجاهل */ }
+            } catch (_) {}
             if (isAdmin) loadAdminData();
         }
 
         // ============================================================
-        //  14. مؤثرات الفوز (نثار)
+        // 15. مؤثرات الفوز
         // ============================================================
 
         function playWinEffect() {
@@ -2123,16 +2085,16 @@
             container.className = 'confetti-container';
             document.body.appendChild(container);
 
-            const colors = ['#ff4444', '#ffd700', '#00ff88', '#00ccff', '#ff00ff', '#ff6600', '#00ffff', '#ffaa00', '#ff6b6b'];
-            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦', '✿', '✦'];
+            const colors = ['#FFD700', '#FFE44D', '#DAA520', '#FFFFFF', '#DC143C', '#FF6B35', '#FFAA00'];
+            const shapes = ['■', '●', '▲', '★', '◆', '♥', '♦', '✦'];
 
-            for (let i = 0; i < 180; i++) {
+            for (let i = 0; i < 160; i++) {
                 const el = document.createElement('div');
                 el.className = 'confetti-piece';
                 el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
                 el.style.left = Math.random() * 100 + '%';
                 el.style.color = colors[Math.floor(Math.random() * colors.length)];
-                el.style.fontSize = (Math.random() * 24 + 8) + 'px';
+                el.style.fontSize = (Math.random() * 22 + 8) + 'px';
                 el.style.animationDuration = (Math.random() * 3.5 + 1.8) + 's';
                 el.style.animationDelay = (Math.random() * 1.8) + 's';
                 container.appendChild(el);
@@ -2141,7 +2103,7 @@
         }
 
         // ============================================================
-        //  15. لوحة الإدارة (للمشرف)
+        // 16. لوحة الإدارة
         // ============================================================
 
         let adminDataLoaded = false;
@@ -2158,8 +2120,8 @@
                 }
             } catch (e) {
                 document.getElementById('adminContent').innerHTML = `
-                            <div style="color:#ff4466; text-align:center; padding:25px;">
-                                ❌ فشل تحميل بيانات الإدارة
+                            <div style="color:#DC143C; text-align:center; padding:20px;">
+                                ❌ فشل تحميل البيانات
                             </div>
                         `;
             }
@@ -2173,57 +2135,57 @@
             const lucky = stats.luckyPrize || { name: '🍀 حظ أوفر', value: 100 };
 
             let html = `
-                        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px;">
-                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <div style="font-size:1.6rem; font-weight:700; color:var(--primary);">${global.total_plays || 0}</div>
-                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الجولات</div>
+                        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px;">
+                            <div style="background:rgba(255,215,0,0.03); padding:12px; border-radius:10px; border:1px solid rgba(255,215,0,0.05); text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700; color:var(--gold);">${global.total_plays || 0}</div>
+                                <div style="font-size:0.55rem; color:rgba(255,255,255,0.2);">إجمالي الجولات</div>
                             </div>
-                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <div style="font-size:1.6rem; font-weight:700; color:#00ff88;">${global.total_wins || 0}</div>
-                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الفوز</div>
+                            <div style="background:rgba(255,215,0,0.03); padding:12px; border-radius:10px; border:1px solid rgba(255,215,0,0.05); text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700; color:var(--gold);">${global.total_wins || 0}</div>
+                                <div style="font-size:0.55rem; color:rgba(255,255,255,0.2);">إجمالي الفوز</div>
                             </div>
-                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <div style="font-size:1.6rem; font-weight:700; color:#ff4466;">${global.total_losses || 0}</div>
-                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الخسارة</div>
+                            <div style="background:rgba(255,215,0,0.03); padding:12px; border-radius:10px; border:1px solid rgba(255,215,0,0.05); text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700; color:#DC143C;">${global.total_losses || 0}</div>
+                                <div style="font-size:0.55rem; color:rgba(255,255,255,0.2);">إجمالي الخسارة</div>
                             </div>
-                            <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
-                                <div style="font-size:1.6rem; font-weight:700; color:var(--accent);">${global.total_prizes || 0}</div>
-                                <div style="font-size:0.6rem; color:rgba(255,255,255,0.25);">إجمالي الجوائز</div>
+                            <div style="background:rgba(255,215,0,0.03); padding:12px; border-radius:10px; border:1px solid rgba(255,215,0,0.05); text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700; color:var(--gold);">${global.total_prizes || 0}</div>
+                                <div style="font-size:0.55rem; color:rgba(255,255,255,0.2);">إجمالي الجوائز</div>
                             </div>
                         </div>
-                        <div style="margin-bottom:18px;">
-                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:8px;">🏆 أفضل اللاعبين</div>
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.65rem; color:rgba(255,215,0,0.3); margin-bottom:6px;">🏆 أفضل اللاعبين</div>
                             ${topPlayers.length > 0 ? topPlayers.slice(0, 5).map((p, i) => `
-                                <div style="display:flex; justify-content:space-between; padding:6px 12px; border-bottom:1px solid rgba(255,255,255,0.02); font-size:0.6rem;">
-                                    <span style="color:cyan;">${i+1}. ${p.user_id}</span>
-                                    <span style="color:var(--accent);">${p.total_prize_value || 0} SYP</span>
+                                <div style="display:flex; justify-content:space-between; padding:5px 10px; border-bottom:1px solid rgba(255,215,0,0.02); font-size:0.55rem;">
+                                    <span style="color:var(--gold);">${i+1}. ${p.user_id}</span>
+                                    <span style="color:var(--gold);">${p.total_prize_value || 0} SYP</span>
                                 </div>
-                            `).join('') : '<div style="text-align:center; color:rgba(255,255,255,0.15); font-size:0.7rem;">لا توجد بيانات</div>'}
+                            `).join('') : '<div style="text-align:center; color:rgba(255,255,255,0.1); font-size:0.65rem;">لا توجد بيانات</div>'}
                         </div>
-                        <div style="margin-bottom:18px;">
-                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:8px;">🎯 الجوائز (4 جوائز)</div>
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.65rem; color:rgba(255,215,0,0.3); margin-bottom:6px;">🎯 الجوائز (4 جوائز)</div>
                             ${allPrizes.slice(0, 4).map(p => `
-                                <div style="display:flex; justify-content:space-between; padding:4px 12px; border-bottom:1px solid rgba(255,255,255,0.02); font-size:0.6rem;">
+                                <div style="display:flex; justify-content:space-between; padding:4px 10px; border-bottom:1px solid rgba(255,215,0,0.02); font-size:0.55rem;">
                                     <span>${p.prize_icon || '🎁'} ${p.prize_name || 'جائزة'}</span>
-                                    <span style="color:var(--accent);">${p.prize_value || 0} SYP</span>
+                                    <span style="color:var(--gold);">${p.prize_value || 0} SYP</span>
                                 </div>
                             `).join('')}
                         </div>
-                        <div style="margin-bottom:18px; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                            <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:5px;">🍀 جائزة حظ أوفر</div>
-                            <div style="display:flex; justify-content:space-between; font-size:0.65rem;">
+                        <div style="margin-bottom:14px; padding:10px; background:rgba(255,215,0,0.02); border-radius:10px; border:1px solid rgba(255,215,0,0.05);">
+                            <div style="font-size:0.65rem; color:rgba(255,215,0,0.3); margin-bottom:4px;">🍀 جائزة حظ أوفر</div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
                                 <span>${lucky.name || '🍀 حظ أوفر'}</span>
-                                <span style="color:var(--accent);">${lucky.value || 100} SYP</span>
+                                <span style="color:var(--gold);">${lucky.value || 100} SYP</span>
                             </div>
                         </div>
-                        <button class="modal-btn" onclick="refreshAdminData()" style="width:100%; padding:12px; font-size:0.7rem; margin-top:0;">🔄 تحديث البيانات</button>
+                        <button class="modal-btn" onclick="refreshAdminData()" style="width:100%; padding:10px; font-size:0.65rem; margin-top:0;">🔄 تحديث البيانات</button>
                     `;
             document.getElementById('adminContent').innerHTML = html;
         }
 
         function refreshAdminData() {
             document.getElementById('adminContent').innerHTML =
-                '<div style="color:rgba(255,255,255,0.25); text-align:center; padding:25px;">⏳ جاري التحديث...</div>';
+                '<div style="color:rgba(255,215,0,0.2); text-align:center; padding:20px;">⏳ جاري التحديث...</div>';
             loadAdminData();
         }
 
@@ -2240,7 +2202,7 @@
         }
 
         // ============================================================
-        //  16. ملء الشاشة
+        // 17. ملء الشاشة
         // ============================================================
 
         function toggleFullscreen() {
@@ -2252,41 +2214,33 @@
         }
 
         // ============================================================
-        //  17. تهيئة الصفحة وتشغيل كل شيء
+        // 18. تهيئة الصفحة
         // ============================================================
 
         document.addEventListener('DOMContentLoaded', () => {
-            // --- ربط الأزرار ---
             document.getElementById('adminToggle').addEventListener('click', toggleAdminPanel);
             document.getElementById('startGameBtn').addEventListener('click', startGame);
-
-            // --- تهيئة الصوت ---
             initAudio();
-
-            // --- بدء التحميل والاتصال ---
             showLoading();
             connectSocket();
         });
 
-        // --- تحديث دوري للبيانات (للمشرف) ---
+        // تحديث دوري
         setInterval(() => {
             if (isAdmin && document.getElementById('adminPanel').classList.contains('open')) {
                 loadAdminData();
             }
         }, 35000);
 
-        // --- إعادة اتصال تلقائي ---
         setInterval(() => {
             if (socket && !socket.connected) {
                 socket.connect();
             }
         }, 12000);
 
-        // --- تسجيل معلومات التشغيل ---
-        console.log('🎰 جاك بوت - النسخة النهائية (AAA)');
+        console.log('🎰 جاك بوت - النسخة النهائية');
         console.log(`👤 المستخدم: ${userId} | 👑 مدير: ${isAdmin}`);
         console.log(`🔗 الخادم: ${SERVER_URL}`);
-        console.log('✅ جاهز للعمل!');
     </script>
 
 </body>
